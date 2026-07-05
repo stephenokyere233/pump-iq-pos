@@ -3,7 +3,6 @@ import 'package:pump_iq/src/imports/packages_imports.dart';
 
 import '../../data/models/sale_model.dart';
 import '../providers/sale_bloc.dart';
-import '../widgets/otp_verification_sheet.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
@@ -59,11 +58,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         bloc.add(PayWithMomo(
           context: context,
           phone: phone,
-          provider: provider.bankCode,
+          provider: provider,
         ));
-        break;
-      case PaymentMethod.card:
-        bloc.add(PayWithCard(context: context));
         break;
     }
   }
@@ -106,19 +102,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     _clearMomoValidation();
   }
 
-  void _showOtpSheet() {
-    final bloc = context.read<SaleBloc>();
-    final phone = bloc.state.customer?.phone ?? '';
-    showAppSheet<void>(
-      child: OtpVerificationSheet(phone: phone),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isLoading = context.select((SaleBloc b) => b.state.isPaymentLoading);
-    final otpPending = context.select((SaleBloc b) => b.state.otpPending);
-    final otpVerified = context.select((SaleBloc b) => b.state.otpVerified);
     final isValidatingAccount =
         context.select((SaleBloc b) => b.state.isValidatingAccount);
     final validatedAccountName =
@@ -132,20 +118,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     final colorScheme = context.colors;
 
     return Scaffold(
-      appBar: AppTopBar(
-        actions: [
-          if (otpPending && !otpVerified)
-            IconButton(
-              onPressed: _showOtpSheet,
-              icon: Icon(
-                Icons.verified_user_outlined,
-                color: colorScheme.primary,
-                size: 22.sp,
-              ),
-              tooltip: 'Verify Customer',
-            ),
-        ],
-      ),
+      appBar: const AppTopBar(),
       body: SafeArea(
         child: StickyFooterLayout(
           body: Column(
@@ -182,13 +155,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                     label: 'MOMO',
                     isSelected: _selected == PaymentMethod.momo,
                     onTap: () => setState(() => _selected = PaymentMethod.momo),
-                  ),
-                  SizedBox(width: AppSpacing.lg.w),
-                  _PaymentOption(
-                    icon: Icons.credit_card,
-                    label: 'Card',
-                    isSelected: _selected == PaymentMethod.card,
-                    onTap: () => setState(() => _selected = PaymentMethod.card),
                   ),
                 ],
               ),

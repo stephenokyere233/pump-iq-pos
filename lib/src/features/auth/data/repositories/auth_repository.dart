@@ -1,4 +1,5 @@
 import 'package:pump_iq/src/features/auth/data/models/auth_response_model.dart';
+import 'package:pump_iq/src/features/auth/data/models/station_attendant_pin_login_model.dart';
 import 'package:pump_iq/src/features/auth/data/models/user_model.dart';
 import 'package:pump_iq/src/imports/core_imports.dart';
 import 'package:pump_iq/src/imports/packages_imports.dart';
@@ -13,25 +14,22 @@ class AuthRepository {
     });
   }
 
-  FutureEither<AppUser> login({required String pin}) async {
-    final deviceIdResult = await _resolveDeviceId();
-    return await deviceIdResult.fold(
-      (failure) async => left<Failure, AppUser>(failure),
-      (deviceId) async {
-        AppLogger.info('Logging in with device ID: $deviceId');
-        final result = await _authService.login(pin: pin, deviceId: deviceId);
+  String? getLastLoginStationId() => _authService.getLastLoginStationId();
 
-        return result.flatMap((userData) {
-          if (userData == null) {
-            return left(
-              const ServerFailure('Login failed: User record not found'),
-            );
-          }
-
-          return right(_mapAppUserFromAuthPayload(userData));
-        });
-      },
+  FutureEither<AppUser> login({
+    required String stationId,
+    required String pin,
+  }) async {
+    final result = await _authService.loginWithPin(
+      request: StationAttendantPinLoginRequest(
+        stationId: stationId,
+        pin: pin.replaceAll(RegExp(r'\s'), ''),
+      ),
     );
+
+    return result.flatMap((userData) {
+      return right(_mapAppUserFromAuthPayload(userData));
+    });
   }
 
   FutureEither<void> logout() {
@@ -39,6 +37,10 @@ class AuthRepository {
   }
 
   String? getStationId() => _authService.getStationId();
+
+  String? getPumpAttendantId() => _authService.getPumpAttendantId();
+
+  String? getCompanyId() => _authService.getCompanyId();
 
   FutureEither<bool> checkDeviceRegistration() async {
     final deviceIdResult = await _resolveDeviceId();
@@ -49,19 +51,23 @@ class AuthRepository {
   }
 
   FutureEither<String> _resolveDeviceId() async {
-    final payloadResult =
-        await DeviceInfoService.instance.getRegisterDevicePayload();
+    final cachedDeviceId = _authService.getCachedDeviceId();
+    if (cachedDeviceId != null && cachedDeviceId.isNotEmpty) {
+      AppLogger.info('Device id (cached): $cachedDeviceId');
+      return right(cachedDeviceId);
+    }
 
-    return payloadResult.fold(
-      left,
-      (payload) {
-        final deviceId = payload['id'] as String?;
-        if (deviceId == null || deviceId.isEmpty) {
-          return left(const ServerFailure('Device id unavailable'));
-        }
-        return right(deviceId);
-      },
-    );
+    final payloadResult = await DeviceInfoService.instance
+        .getRegisterDevicePayload();
+
+    return payloadResult.fold(left, (payload) {
+      final deviceId = payload['id'] as String?;
+      if (deviceId == null || deviceId.isEmpty) {
+        return left(const ServerFailure('Device id unavailable'));
+      }
+      AppLogger.info('Device id (hardware): $deviceId');
+      return right(deviceId);
+    });
   }
 
   FutureEither<void> registerDevice({
@@ -76,14 +82,21 @@ class AuthRepository {
 
     return result.map((userData) {
       if (userData == null) return null;
-
       return _mapAppUserFromAuthPayload(userData);
     });
   }
 
   AppUser _mapAppUserFromAuthPayload(Map<String, dynamic> payload) {
-    return AuthResponse.fromPayload(payload)
-        .user
-        .toAppUser(cachedStationName: _authService.getStationName());
+    final auth = AuthResponse.fromPayload(payload);
+    final roles = parseAuthRoleMaps(payload);
+    return auth.user.toAppUser(
+      cachedStationName: _authService.getStationName(),
+      cachedStationId: auth.stationId ?? _authService.getStationId(),
+      pumpAttendantId:
+          auth.pumpAttendantId ?? _authService.getPumpAttendantId(),
+      companyId:
+          resolveCompanyIdFromRoles(roles) ?? _authService.getCompanyId(),
+      role: resolveRoleNameFromRoles(roles),
+    );
   }
 }

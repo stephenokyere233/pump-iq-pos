@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../services/auth_service.dart';
 import '../services/secure_storage_service.dart';
+import 'api_paths.dart';
 
 /// Intercepts 401 responses and attempts a single token refresh before
 /// failing the request. Uses [QueuedInterceptor] so concurrent 401s
@@ -36,12 +37,12 @@ class AuthInterceptor extends QueuedInterceptor {
       }
 
       final refreshResponse = await _dio.post<Map<String, dynamic>>(
-        '/auth/refresh',
-        data: {'refreshToken': refreshToken},
+        ApiPaths.usersTokenRefresh,
+        data: {'refresh': refreshToken},
       );
 
       final data = refreshResponse.data;
-      final newAccessToken = data?['accessToken'] as String?;
+      final newAccessToken = data?['access'] as String?;
 
       if (newAccessToken == null) {
         await AuthService.instance.clearLocalSession();
@@ -51,7 +52,7 @@ class AuthInterceptor extends QueuedInterceptor {
       await _storage.write(_accessTokenKey, newAccessToken);
       _dio.options.headers['Authorization'] = 'Bearer $newAccessToken';
 
-      final newRefreshToken = data?['refreshToken'] as String?;
+      final newRefreshToken = data?['refresh'] as String?;
       if (newRefreshToken != null) {
         await _storage.write(_refreshTokenKey, newRefreshToken);
       }
@@ -66,8 +67,7 @@ class AuthInterceptor extends QueuedInterceptor {
   }
 
   bool _isAuthPath(String path) {
-    return path.contains('/auth/refresh') ||
-        path.contains('/auth/pump-attendant/login') ||
-        path.contains('/auth/logout');
+    return path.contains(ApiPaths.usersTokenRefresh) ||
+        path.contains(ApiPaths.staffTokenPin);
   }
 }

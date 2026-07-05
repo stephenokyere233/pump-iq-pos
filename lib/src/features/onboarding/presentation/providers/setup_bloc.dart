@@ -44,8 +44,8 @@ class SetupBloc extends Bloc<SetupEvent, SetupState> {
   final AuthRepository _repository;
 
   SetupBloc({required AuthRepository repository})
-      : _repository = repository,
-        super(const SetupState.initial()) {
+    : _repository = repository,
+      super(const SetupState.initial()) {
     on<RegisterDeviceRequested>(_onRegisterDevice);
   }
 
@@ -55,15 +55,13 @@ class SetupBloc extends Bloc<SetupEvent, SetupState> {
   ) async {
     emit(state.copyWith(isLoading: true));
 
-    final payloadResult =
-        await DeviceInfoService.instance.getRegisterDevicePayload();
+    final payloadResult = await DeviceInfoService.instance
+        .getRegisterDevicePayload();
 
     await payloadResult.fold(
       (failure) async {
         emit(state.copyWith(isLoading: false));
-        if (event.context.mounted) {
-          showToast(event.context, message: failure.message, status: 'error');
-        }
+        showGlobalToast(message: failure.message, status: 'error');
       },
       (payload) async {
         final result = await _repository.registerDevice(payload: payload);
@@ -71,17 +69,14 @@ class SetupBloc extends Bloc<SetupEvent, SetupState> {
         result.fold(
           (failure) {
             emit(state.copyWith(isLoading: false));
-            if (event.context.mounted) {
-              showToast(event.context,
-                  message: failure.message, status: 'error');
-            }
+            showGlobalToast(message: failure.message, status: 'error');
           },
           (_) {
             emit(state.copyWith(isLoading: false));
             if (event.context.mounted) {
-              event.context
-                  .read<SessionBloc>()
-                  .add(const SessionCheckRequested());
+              event.context.read<SessionBloc>().add(
+                const SessionDeviceRegistered(),
+              );
             }
           },
         );

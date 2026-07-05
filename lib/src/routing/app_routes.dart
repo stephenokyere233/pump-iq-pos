@@ -12,7 +12,5 @@ abstract final class AppRoutes {
   static const String paymentMethod = '/payment-method';
   static const String momoOtp = '/momo-otp';
   static const String momoPendingApproval = '/momo-pending-approval';
-  static const String cardCheckout = '/card-checkout';
-  static const String cardVerify = '/card-verify';
   static const String transactionComplete = '/transaction-complete';
 }

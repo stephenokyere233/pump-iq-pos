@@ -11,10 +11,26 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _stationIdController = TextEditingController();
   final _pinController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final lastStationId = context.read<AuthBloc>().state.lastStationId;
+      if (lastStationId != null &&
+          lastStationId.isNotEmpty &&
+          _stationIdController.text.isEmpty) {
+        _stationIdController.text = lastStationId;
+      }
+    });
+  }
+
+  @override
   void dispose() {
+    _stationIdController.dispose();
     _pinController.dispose();
     super.dispose();
   }
@@ -27,15 +43,17 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!(_formKey.currentState?.validate() ?? false)) return;
 
       context.read<AuthBloc>().add(
-            LoginRequested(
-              context: context,
-              pin: _pinController.text,
-            ),
-          );
+        LoginRequested(
+          context: context,
+          stationId: _stationIdController.text.trim(),
+          pin: _pinController.text,
+        ),
+      );
     }
 
     return _LoginView(
       formKey: _formKey,
+      stationIdController: _stationIdController,
       pinController: _pinController,
       isLoading: isLoading,
       onLogin: handleLogin,
@@ -46,12 +64,14 @@ class _LoginScreenState extends State<LoginScreen> {
 class _LoginView extends StatelessWidget {
   const _LoginView({
     required this.formKey,
+    required this.stationIdController,
     required this.pinController,
     required this.isLoading,
     required this.onLogin,
   });
 
   final GlobalKey<FormState> formKey;
+  final TextEditingController stationIdController;
   final TextEditingController pinController;
   final bool isLoading;
   final VoidCallback onLogin;
@@ -92,7 +112,7 @@ class _LoginView extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.sm.h),
                 Text(
-                  'Enter your PIN to sign in',
+                  'Enter your station ID and PIN to sign in',
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
@@ -103,6 +123,25 @@ class _LoginView extends StatelessWidget {
                   key: formKey,
                   child: Column(
                     children: [
+                      AppTextField(
+                        controller: stationIdController,
+                        enabled: !isLoading,
+                        label: 'Station ID',
+                        hint: 'Station UUID',
+                        keyboardType: TextInputType.text,
+                        prefixIcon: Icon(
+                          Icons.store,
+                          color: colorScheme.primary,
+                        ),
+                        textInputAction: TextInputAction.next,
+                        validator: (v) {
+                          if (AppUtils.isBlank(v)) {
+                            return 'Station ID is required';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: AppSpacing.md.h),
                       AppTextField(
                         controller: pinController,
                         enabled: !isLoading,

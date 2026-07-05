@@ -18,7 +18,6 @@ class StateWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authRepository = AuthRepository();
-    final saleRepository = SaleRepository();
 
     return MultiBlocProvider(
       providers: [
@@ -32,7 +31,10 @@ class StateWrapper extends StatelessWidget {
           create: (_) => SetupBloc(repository: authRepository),
         ),
         BlocProvider<SaleBloc>(
-          create: (_) => SaleBloc(repository: saleRepository),
+          create: (_) => SaleBloc(
+            repository: SaleRepository(),
+            authRepository: authRepository,
+          ),
         ),
       ],
       child: child,

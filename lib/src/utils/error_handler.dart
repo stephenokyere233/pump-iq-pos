@@ -12,7 +12,10 @@ class AppErrorHandler {
       if (data is Map<String, dynamic>) {
         apiMessage = data['message'] as String? ??
             data['title'] as String? ??
-            data['error'] as String?;
+            data['error'] as String? ??
+            data['detail'] as String?;
+
+        apiMessage ??= _formatFieldErrors(data);
       } else if (data is String && data.isNotEmpty) {
         apiMessage = data;
       }
@@ -39,5 +42,18 @@ class AppErrorHandler {
     } catch (_) {}
 
     return 'An unexpected error occurred';
+  }
+
+  static String? _formatFieldErrors(Map<String, dynamic> data) {
+    final messages = <String>[];
+    for (final entry in data.entries) {
+      final value = entry.value;
+      if (value is List && value.isNotEmpty) {
+        messages.add('${entry.key}: ${value.first}');
+      } else if (value is String && value.isNotEmpty) {
+        messages.add('${entry.key}: $value');
+      }
+    }
+    return messages.isEmpty ? null : messages.join('\n');
   }
 }

@@ -90,7 +90,6 @@ class ReceiptPdfBuilder {
             _sectionTitle('Payment', boldFont),
             _row('Method', input.paymentMethodLabel, baseFont),
             ..._momoSection(input, baseFont),
-            ..._cardSection(input, baseFont),
             if (input.pointsEarned != null && input.pointsEarned! > 0) ...[
               pw.SizedBox(height: 8),
               _row('Points earned', '${input.pointsEarned}', baseFont),
@@ -126,19 +125,6 @@ class ReceiptPdfBuilder {
       if (input.momoChargeStatusLabel != null &&
           input.momoChargeStatusLabel!.isNotEmpty)
         _row('Status', input.momoChargeStatusLabel!, baseFont),
-    ];
-  }
-
-  static List<pw.Widget> _cardSection(ReceiptInput input, pw.Font baseFont) {
-    final isCard = input.paymentMethodLabel.toLowerCase().contains('card');
-    if (!isCard) return [];
-
-    return [
-      if (input.cardReference != null && input.cardReference!.isNotEmpty)
-        _row('Card ref', input.cardReference!, baseFont),
-      if (input.truncatedCardAuthUrl != null &&
-          input.truncatedCardAuthUrl!.isNotEmpty)
-        _row('Auth URL', input.truncatedCardAuthUrl!, baseFont),
     ];
   }
 

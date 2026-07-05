@@ -13,6 +13,8 @@ abstract class AppUser with _$AppUser {
     String? stationId,
     String? stationName,
     String? role,
+    String? pumpAttendantId,
+    String? companyId,
   }) = _AppUser;
 
   factory AppUser.empty() => const AppUser(id: '', email: '');

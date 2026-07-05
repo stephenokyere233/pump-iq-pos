@@ -14,9 +14,9 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$ValidateAccountRequest {
-  String get customerNumber;
-  String get bankCode;
-  String? get type;
+  String get phoneNumber;
+  String get channel;
+  String get currency;
 
   /// Create a copy of ValidateAccountRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -31,19 +31,19 @@ mixin _$ValidateAccountRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is ValidateAccountRequest &&
-            (identical(other.customerNumber, customerNumber) ||
-                other.customerNumber == customerNumber) &&
-            (identical(other.bankCode, bankCode) ||
-                other.bankCode == bankCode) &&
-            (identical(other.type, type) || other.type == type));
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.channel, channel) || other.channel == channel) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, customerNumber, bankCode, type);
+  int get hashCode => Object.hash(runtimeType, phoneNumber, channel, currency);
 
   @override
   String toString() {
-    return 'ValidateAccountRequest(customerNumber: $customerNumber, bankCode: $bankCode, type: $type)';
+    return 'ValidateAccountRequest(phoneNumber: $phoneNumber, channel: $channel, currency: $currency)';
   }
 }
 
@@ -53,7 +53,7 @@ abstract mixin class $ValidateAccountRequestCopyWith<$Res> {
           $Res Function(ValidateAccountRequest) _then) =
       _$ValidateAccountRequestCopyWithImpl;
   @useResult
-  $Res call({String customerNumber, String bankCode, String? type});
+  $Res call({String phoneNumber, String channel, String currency});
 }
 
 /// @nodoc
@@ -69,23 +69,23 @@ class _$ValidateAccountRequestCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? customerNumber = null,
-    Object? bankCode = null,
-    Object? type = freezed,
+    Object? phoneNumber = null,
+    Object? channel = null,
+    Object? currency = null,
   }) {
     return _then(_self.copyWith(
-      customerNumber: null == customerNumber
-          ? _self.customerNumber
-          : customerNumber // ignore: cast_nullable_to_non_nullable
+      phoneNumber: null == phoneNumber
+          ? _self.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      bankCode: null == bankCode
-          ? _self.bankCode
-          : bankCode // ignore: cast_nullable_to_non_nullable
+      channel: null == channel
+          ? _self.channel
+          : channel // ignore: cast_nullable_to_non_nullable
               as String,
-      type: freezed == type
-          ? _self.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as String?,
+      currency: null == currency
+          ? _self.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -183,14 +183,14 @@ extension ValidateAccountRequestPatterns on ValidateAccountRequest {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String customerNumber, String bankCode, String? type)?
+    TResult Function(String phoneNumber, String channel, String currency)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _ValidateAccountRequest() when $default != null:
-        return $default(_that.customerNumber, _that.bankCode, _that.type);
+        return $default(_that.phoneNumber, _that.channel, _that.currency);
       case _:
         return orElse();
     }
@@ -211,13 +211,13 @@ extension ValidateAccountRequestPatterns on ValidateAccountRequest {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String customerNumber, String bankCode, String? type)
+    TResult Function(String phoneNumber, String channel, String currency)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _ValidateAccountRequest():
-        return $default(_that.customerNumber, _that.bankCode, _that.type);
+        return $default(_that.phoneNumber, _that.channel, _that.currency);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -237,13 +237,13 @@ extension ValidateAccountRequestPatterns on ValidateAccountRequest {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String customerNumber, String bankCode, String? type)?
+    TResult? Function(String phoneNumber, String channel, String currency)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _ValidateAccountRequest() when $default != null:
-        return $default(_that.customerNumber, _that.bankCode, _that.type);
+        return $default(_that.phoneNumber, _that.channel, _that.currency);
       case _:
         return null;
     }
@@ -254,15 +254,16 @@ extension ValidateAccountRequestPatterns on ValidateAccountRequest {
 
 class _ValidateAccountRequest extends ValidateAccountRequest {
   const _ValidateAccountRequest(
-      {required this.customerNumber, required this.bankCode, this.type})
+      {required this.phoneNumber, required this.channel, this.currency = 'GHS'})
       : super._();
 
   @override
-  final String customerNumber;
+  final String phoneNumber;
   @override
-  final String bankCode;
+  final String channel;
   @override
-  final String? type;
+  @JsonKey()
+  final String currency;
 
   /// Create a copy of ValidateAccountRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -278,19 +279,19 @@ class _ValidateAccountRequest extends ValidateAccountRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _ValidateAccountRequest &&
-            (identical(other.customerNumber, customerNumber) ||
-                other.customerNumber == customerNumber) &&
-            (identical(other.bankCode, bankCode) ||
-                other.bankCode == bankCode) &&
-            (identical(other.type, type) || other.type == type));
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.channel, channel) || other.channel == channel) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, customerNumber, bankCode, type);
+  int get hashCode => Object.hash(runtimeType, phoneNumber, channel, currency);
 
   @override
   String toString() {
-    return 'ValidateAccountRequest(customerNumber: $customerNumber, bankCode: $bankCode, type: $type)';
+    return 'ValidateAccountRequest(phoneNumber: $phoneNumber, channel: $channel, currency: $currency)';
   }
 }
 
@@ -302,7 +303,7 @@ abstract mixin class _$ValidateAccountRequestCopyWith<$Res>
       __$ValidateAccountRequestCopyWithImpl;
   @override
   @useResult
-  $Res call({String customerNumber, String bankCode, String? type});
+  $Res call({String phoneNumber, String channel, String currency});
 }
 
 /// @nodoc
@@ -318,31 +319,30 @@ class __$ValidateAccountRequestCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? customerNumber = null,
-    Object? bankCode = null,
-    Object? type = freezed,
+    Object? phoneNumber = null,
+    Object? channel = null,
+    Object? currency = null,
   }) {
     return _then(_ValidateAccountRequest(
-      customerNumber: null == customerNumber
-          ? _self.customerNumber
-          : customerNumber // ignore: cast_nullable_to_non_nullable
+      phoneNumber: null == phoneNumber
+          ? _self.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      bankCode: null == bankCode
-          ? _self.bankCode
-          : bankCode // ignore: cast_nullable_to_non_nullable
+      channel: null == channel
+          ? _self.channel
+          : channel // ignore: cast_nullable_to_non_nullable
               as String,
-      type: freezed == type
-          ? _self.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as String?,
+      currency: null == currency
+          ? _self.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
 
 /// @nodoc
 mixin _$ValidateAccountResponse {
-  String? get name;
-  String? get customerNumber;
+  String? get accountName;
 
   /// Create a copy of ValidateAccountResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -357,17 +357,16 @@ mixin _$ValidateAccountResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is ValidateAccountResponse &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.customerNumber, customerNumber) ||
-                other.customerNumber == customerNumber));
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, name, customerNumber);
+  int get hashCode => Object.hash(runtimeType, accountName);
 
   @override
   String toString() {
-    return 'ValidateAccountResponse(name: $name, customerNumber: $customerNumber)';
+    return 'ValidateAccountResponse(accountName: $accountName)';
   }
 }
 
@@ -377,7 +376,7 @@ abstract mixin class $ValidateAccountResponseCopyWith<$Res> {
           $Res Function(ValidateAccountResponse) _then) =
       _$ValidateAccountResponseCopyWithImpl;
   @useResult
-  $Res call({String? name, String? customerNumber});
+  $Res call({String? accountName});
 }
 
 /// @nodoc
@@ -393,17 +392,12 @@ class _$ValidateAccountResponseCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = freezed,
-    Object? customerNumber = freezed,
+    Object? accountName = freezed,
   }) {
     return _then(_self.copyWith(
-      name: freezed == name
-          ? _self.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      customerNumber: freezed == customerNumber
-          ? _self.customerNumber
-          : customerNumber // ignore: cast_nullable_to_non_nullable
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -502,13 +496,13 @@ extension ValidateAccountResponsePatterns on ValidateAccountResponse {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String? name, String? customerNumber)? $default, {
+    TResult Function(String? accountName)? $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _ValidateAccountResponse() when $default != null:
-        return $default(_that.name, _that.customerNumber);
+        return $default(_that.accountName);
       case _:
         return orElse();
     }
@@ -529,12 +523,12 @@ extension ValidateAccountResponsePatterns on ValidateAccountResponse {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String? name, String? customerNumber) $default,
+    TResult Function(String? accountName) $default,
   ) {
     final _that = this;
     switch (_that) {
       case _ValidateAccountResponse():
-        return $default(_that.name, _that.customerNumber);
+        return $default(_that.accountName);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -554,12 +548,12 @@ extension ValidateAccountResponsePatterns on ValidateAccountResponse {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String? name, String? customerNumber)? $default,
+    TResult? Function(String? accountName)? $default,
   ) {
     final _that = this;
     switch (_that) {
       case _ValidateAccountResponse() when $default != null:
-        return $default(_that.name, _that.customerNumber);
+        return $default(_that.accountName);
       case _:
         return null;
     }
@@ -569,12 +563,10 @@ extension ValidateAccountResponsePatterns on ValidateAccountResponse {
 /// @nodoc
 
 class _ValidateAccountResponse implements ValidateAccountResponse {
-  const _ValidateAccountResponse({this.name, this.customerNumber});
+  const _ValidateAccountResponse({this.accountName});
 
   @override
-  final String? name;
-  @override
-  final String? customerNumber;
+  final String? accountName;
 
   /// Create a copy of ValidateAccountResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -590,17 +582,16 @@ class _ValidateAccountResponse implements ValidateAccountResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _ValidateAccountResponse &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.customerNumber, customerNumber) ||
-                other.customerNumber == customerNumber));
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, name, customerNumber);
+  int get hashCode => Object.hash(runtimeType, accountName);
 
   @override
   String toString() {
-    return 'ValidateAccountResponse(name: $name, customerNumber: $customerNumber)';
+    return 'ValidateAccountResponse(accountName: $accountName)';
   }
 }
 
@@ -612,7 +603,7 @@ abstract mixin class _$ValidateAccountResponseCopyWith<$Res>
       __$ValidateAccountResponseCopyWithImpl;
   @override
   @useResult
-  $Res call({String? name, String? customerNumber});
+  $Res call({String? accountName});
 }
 
 /// @nodoc
@@ -628,670 +619,12 @@ class __$ValidateAccountResponseCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? name = freezed,
-    Object? customerNumber = freezed,
+    Object? accountName = freezed,
   }) {
     return _then(_ValidateAccountResponse(
-      name: freezed == name
-          ? _self.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      customerNumber: freezed == customerNumber
-          ? _self.customerNumber
-          : customerNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-mixin _$MomoChargeResponse {
-  MomoChargeStatus? get status;
-  String get reference;
-  String? get nextAction;
-
-  /// Create a copy of MomoChargeResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  $MomoChargeResponseCopyWith<MomoChargeResponse> get copyWith =>
-      _$MomoChargeResponseCopyWithImpl<MomoChargeResponse>(
-          this as MomoChargeResponse, _$identity);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is MomoChargeResponse &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference) &&
-            (identical(other.nextAction, nextAction) ||
-                other.nextAction == nextAction));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, status, reference, nextAction);
-
-  @override
-  String toString() {
-    return 'MomoChargeResponse(status: $status, reference: $reference, nextAction: $nextAction)';
-  }
-}
-
-/// @nodoc
-abstract mixin class $MomoChargeResponseCopyWith<$Res> {
-  factory $MomoChargeResponseCopyWith(
-          MomoChargeResponse value, $Res Function(MomoChargeResponse) _then) =
-      _$MomoChargeResponseCopyWithImpl;
-  @useResult
-  $Res call({MomoChargeStatus? status, String reference, String? nextAction});
-}
-
-/// @nodoc
-class _$MomoChargeResponseCopyWithImpl<$Res>
-    implements $MomoChargeResponseCopyWith<$Res> {
-  _$MomoChargeResponseCopyWithImpl(this._self, this._then);
-
-  final MomoChargeResponse _self;
-  final $Res Function(MomoChargeResponse) _then;
-
-  /// Create a copy of MomoChargeResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? status = freezed,
-    Object? reference = null,
-    Object? nextAction = freezed,
-  }) {
-    return _then(_self.copyWith(
-      status: freezed == status
-          ? _self.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as MomoChargeStatus?,
-      reference: null == reference
-          ? _self.reference
-          : reference // ignore: cast_nullable_to_non_nullable
-              as String,
-      nextAction: freezed == nextAction
-          ? _self.nextAction
-          : nextAction // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// Adds pattern-matching-related methods to [MomoChargeResponse].
-extension MomoChargeResponsePatterns on MomoChargeResponse {
-  /// A variant of `map` that fallback to returning `orElse`.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case _:
-  ///     return orElse();
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_MomoChargeResponse value)? $default, {
-    required TResult orElse(),
-  }) {
-    final _that = this;
-    switch (_that) {
-      case _MomoChargeResponse() when $default != null:
-        return $default(_that);
-      case _:
-        return orElse();
-    }
-  }
-
-  /// A `switch`-like method, using callbacks.
-  ///
-  /// Callbacks receives the raw object, upcasted.
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case final Subclass2 value:
-  ///     return ...;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_MomoChargeResponse value) $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoChargeResponse():
-        return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
-    }
-  }
-
-  /// A variant of `map` that fallback to returning `null`.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case _:
-  ///     return null;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_MomoChargeResponse value)? $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoChargeResponse() when $default != null:
-        return $default(_that);
-      case _:
-        return null;
-    }
-  }
-
-  /// A variant of `when` that fallback to an `orElse` callback.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case _:
-  ///     return orElse();
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(
-            MomoChargeStatus? status, String reference, String? nextAction)?
-        $default, {
-    required TResult orElse(),
-  }) {
-    final _that = this;
-    switch (_that) {
-      case _MomoChargeResponse() when $default != null:
-        return $default(_that.status, _that.reference, _that.nextAction);
-      case _:
-        return orElse();
-    }
-  }
-
-  /// A `switch`-like method, using callbacks.
-  ///
-  /// As opposed to `map`, this offers destructuring.
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case Subclass2(:final field2):
-  ///     return ...;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(
-            MomoChargeStatus? status, String reference, String? nextAction)
-        $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoChargeResponse():
-        return $default(_that.status, _that.reference, _that.nextAction);
-      case _:
-        throw StateError('Unexpected subclass');
-    }
-  }
-
-  /// A variant of `when` that fallback to returning `null`
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case _:
-  ///     return null;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(
-            MomoChargeStatus? status, String reference, String? nextAction)?
-        $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoChargeResponse() when $default != null:
-        return $default(_that.status, _that.reference, _that.nextAction);
-      case _:
-        return null;
-    }
-  }
-}
-
-/// @nodoc
-
-class _MomoChargeResponse extends MomoChargeResponse {
-  const _MomoChargeResponse(
-      {required this.status, required this.reference, this.nextAction})
-      : super._();
-
-  @override
-  final MomoChargeStatus? status;
-  @override
-  final String reference;
-  @override
-  final String? nextAction;
-
-  /// Create a copy of MomoChargeResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$MomoChargeResponseCopyWith<_MomoChargeResponse> get copyWith =>
-      __$MomoChargeResponseCopyWithImpl<_MomoChargeResponse>(this, _$identity);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _MomoChargeResponse &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference) &&
-            (identical(other.nextAction, nextAction) ||
-                other.nextAction == nextAction));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, status, reference, nextAction);
-
-  @override
-  String toString() {
-    return 'MomoChargeResponse(status: $status, reference: $reference, nextAction: $nextAction)';
-  }
-}
-
-/// @nodoc
-abstract mixin class _$MomoChargeResponseCopyWith<$Res>
-    implements $MomoChargeResponseCopyWith<$Res> {
-  factory _$MomoChargeResponseCopyWith(
-          _MomoChargeResponse value, $Res Function(_MomoChargeResponse) _then) =
-      __$MomoChargeResponseCopyWithImpl;
-  @override
-  @useResult
-  $Res call({MomoChargeStatus? status, String reference, String? nextAction});
-}
-
-/// @nodoc
-class __$MomoChargeResponseCopyWithImpl<$Res>
-    implements _$MomoChargeResponseCopyWith<$Res> {
-  __$MomoChargeResponseCopyWithImpl(this._self, this._then);
-
-  final _MomoChargeResponse _self;
-  final $Res Function(_MomoChargeResponse) _then;
-
-  /// Create a copy of MomoChargeResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? status = freezed,
-    Object? reference = null,
-    Object? nextAction = freezed,
-  }) {
-    return _then(_MomoChargeResponse(
-      status: freezed == status
-          ? _self.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as MomoChargeStatus?,
-      reference: null == reference
-          ? _self.reference
-          : reference // ignore: cast_nullable_to_non_nullable
-              as String,
-      nextAction: freezed == nextAction
-          ? _self.nextAction
-          : nextAction // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-mixin _$MomoCheckPendingResponse {
-  String? get status;
-  String? get reference;
-  String? get message;
-
-  /// Create a copy of MomoCheckPendingResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  $MomoCheckPendingResponseCopyWith<MomoCheckPendingResponse> get copyWith =>
-      _$MomoCheckPendingResponseCopyWithImpl<MomoCheckPendingResponse>(
-          this as MomoCheckPendingResponse, _$identity);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is MomoCheckPendingResponse &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference) &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, status, reference, message);
-
-  @override
-  String toString() {
-    return 'MomoCheckPendingResponse(status: $status, reference: $reference, message: $message)';
-  }
-}
-
-/// @nodoc
-abstract mixin class $MomoCheckPendingResponseCopyWith<$Res> {
-  factory $MomoCheckPendingResponseCopyWith(MomoCheckPendingResponse value,
-          $Res Function(MomoCheckPendingResponse) _then) =
-      _$MomoCheckPendingResponseCopyWithImpl;
-  @useResult
-  $Res call({String? status, String? reference, String? message});
-}
-
-/// @nodoc
-class _$MomoCheckPendingResponseCopyWithImpl<$Res>
-    implements $MomoCheckPendingResponseCopyWith<$Res> {
-  _$MomoCheckPendingResponseCopyWithImpl(this._self, this._then);
-
-  final MomoCheckPendingResponse _self;
-  final $Res Function(MomoCheckPendingResponse) _then;
-
-  /// Create a copy of MomoCheckPendingResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? status = freezed,
-    Object? reference = freezed,
-    Object? message = freezed,
-  }) {
-    return _then(_self.copyWith(
-      status: freezed == status
-          ? _self.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-      reference: freezed == reference
-          ? _self.reference
-          : reference // ignore: cast_nullable_to_non_nullable
-              as String?,
-      message: freezed == message
-          ? _self.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// Adds pattern-matching-related methods to [MomoCheckPendingResponse].
-extension MomoCheckPendingResponsePatterns on MomoCheckPendingResponse {
-  /// A variant of `map` that fallback to returning `orElse`.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case _:
-  ///     return orElse();
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_MomoCheckPendingResponse value)? $default, {
-    required TResult orElse(),
-  }) {
-    final _that = this;
-    switch (_that) {
-      case _MomoCheckPendingResponse() when $default != null:
-        return $default(_that);
-      case _:
-        return orElse();
-    }
-  }
-
-  /// A `switch`-like method, using callbacks.
-  ///
-  /// Callbacks receives the raw object, upcasted.
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case final Subclass2 value:
-  ///     return ...;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_MomoCheckPendingResponse value) $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoCheckPendingResponse():
-        return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
-    }
-  }
-
-  /// A variant of `map` that fallback to returning `null`.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case _:
-  ///     return null;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_MomoCheckPendingResponse value)? $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoCheckPendingResponse() when $default != null:
-        return $default(_that);
-      case _:
-        return null;
-    }
-  }
-
-  /// A variant of `when` that fallback to an `orElse` callback.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case _:
-  ///     return orElse();
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String? status, String? reference, String? message)?
-        $default, {
-    required TResult orElse(),
-  }) {
-    final _that = this;
-    switch (_that) {
-      case _MomoCheckPendingResponse() when $default != null:
-        return $default(_that.status, _that.reference, _that.message);
-      case _:
-        return orElse();
-    }
-  }
-
-  /// A `switch`-like method, using callbacks.
-  ///
-  /// As opposed to `map`, this offers destructuring.
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case Subclass2(:final field2):
-  ///     return ...;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(String? status, String? reference, String? message)
-        $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoCheckPendingResponse():
-        return $default(_that.status, _that.reference, _that.message);
-      case _:
-        throw StateError('Unexpected subclass');
-    }
-  }
-
-  /// A variant of `when` that fallback to returning `null`
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case _:
-  ///     return null;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String? status, String? reference, String? message)?
-        $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _MomoCheckPendingResponse() when $default != null:
-        return $default(_that.status, _that.reference, _that.message);
-      case _:
-        return null;
-    }
-  }
-}
-
-/// @nodoc
-
-class _MomoCheckPendingResponse extends MomoCheckPendingResponse {
-  const _MomoCheckPendingResponse({this.status, this.reference, this.message})
-      : super._();
-
-  @override
-  final String? status;
-  @override
-  final String? reference;
-  @override
-  final String? message;
-
-  /// Create a copy of MomoCheckPendingResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$MomoCheckPendingResponseCopyWith<_MomoCheckPendingResponse> get copyWith =>
-      __$MomoCheckPendingResponseCopyWithImpl<_MomoCheckPendingResponse>(
-          this, _$identity);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _MomoCheckPendingResponse &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference) &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, status, reference, message);
-
-  @override
-  String toString() {
-    return 'MomoCheckPendingResponse(status: $status, reference: $reference, message: $message)';
-  }
-}
-
-/// @nodoc
-abstract mixin class _$MomoCheckPendingResponseCopyWith<$Res>
-    implements $MomoCheckPendingResponseCopyWith<$Res> {
-  factory _$MomoCheckPendingResponseCopyWith(_MomoCheckPendingResponse value,
-          $Res Function(_MomoCheckPendingResponse) _then) =
-      __$MomoCheckPendingResponseCopyWithImpl;
-  @override
-  @useResult
-  $Res call({String? status, String? reference, String? message});
-}
-
-/// @nodoc
-class __$MomoCheckPendingResponseCopyWithImpl<$Res>
-    implements _$MomoCheckPendingResponseCopyWith<$Res> {
-  __$MomoCheckPendingResponseCopyWithImpl(this._self, this._then);
-
-  final _MomoCheckPendingResponse _self;
-  final $Res Function(_MomoCheckPendingResponse) _then;
-
-  /// Create a copy of MomoCheckPendingResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? status = freezed,
-    Object? reference = freezed,
-    Object? message = freezed,
-  }) {
-    return _then(_MomoCheckPendingResponse(
-      status: freezed == status
-          ? _self.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-      reference: freezed == reference
-          ? _self.reference
-          : reference // ignore: cast_nullable_to_non_nullable
-              as String?,
-      message: freezed == message
-          ? _self.message
-          : message // ignore: cast_nullable_to_non_nullable
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -1300,20 +633,22 @@ class __$MomoCheckPendingResponseCopyWithImpl<$Res>
 /// @nodoc
 mixin _$Sale {
   String get id;
-  String? get fuelType;
-  double get litres;
+  String get customerId;
+  String get pumpAttendantId;
+  String get stockId;
+  String get companyId;
+  double get amount;
+  double? get quantity;
   double? get unitPrice;
-  double? get price;
-  double? get discount;
-  double? get netPrice;
-  String? get currencyCode;
-  String? get currencySymbol;
-  String? get status;
   String? get paymentMethod;
-  int? get pointsEarned;
-  String? get customerName;
-  String? get pumpAttendantName;
-  String? get stationName;
+  String? get accountNumber;
+  String? get accountName;
+  String? get status;
+  String? get paymentExternalRef;
+  String? get moolreTransactionId;
+  String? get paymentLink;
+  bool get paymentOtpRequired;
+  SalePaymentCollectionStatus? get paymentCollectionStatus;
   String? get createdAt;
 
   /// Create a copy of Sale
@@ -1329,31 +664,36 @@ mixin _$Sale {
         (other.runtimeType == runtimeType &&
             other is Sale &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.fuelType, fuelType) ||
-                other.fuelType == fuelType) &&
-            (identical(other.litres, litres) || other.litres == litres) &&
+            (identical(other.customerId, customerId) ||
+                other.customerId == customerId) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
+            (identical(other.stockId, stockId) || other.stockId == stockId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.quantity, quantity) ||
+                other.quantity == quantity) &&
             (identical(other.unitPrice, unitPrice) ||
                 other.unitPrice == unitPrice) &&
-            (identical(other.price, price) || other.price == price) &&
-            (identical(other.discount, discount) ||
-                other.discount == discount) &&
-            (identical(other.netPrice, netPrice) ||
-                other.netPrice == netPrice) &&
-            (identical(other.currencyCode, currencyCode) ||
-                other.currencyCode == currencyCode) &&
-            (identical(other.currencySymbol, currencySymbol) ||
-                other.currencySymbol == currencySymbol) &&
-            (identical(other.status, status) || other.status == status) &&
             (identical(other.paymentMethod, paymentMethod) ||
                 other.paymentMethod == paymentMethod) &&
-            (identical(other.pointsEarned, pointsEarned) ||
-                other.pointsEarned == pointsEarned) &&
-            (identical(other.customerName, customerName) ||
-                other.customerName == customerName) &&
-            (identical(other.pumpAttendantName, pumpAttendantName) ||
-                other.pumpAttendantName == pumpAttendantName) &&
-            (identical(other.stationName, stationName) ||
-                other.stationName == stationName) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.paymentExternalRef, paymentExternalRef) ||
+                other.paymentExternalRef == paymentExternalRef) &&
+            (identical(other.moolreTransactionId, moolreTransactionId) ||
+                other.moolreTransactionId == moolreTransactionId) &&
+            (identical(other.paymentLink, paymentLink) ||
+                other.paymentLink == paymentLink) &&
+            (identical(other.paymentOtpRequired, paymentOtpRequired) ||
+                other.paymentOtpRequired == paymentOtpRequired) &&
+            (identical(
+                    other.paymentCollectionStatus, paymentCollectionStatus) ||
+                other.paymentCollectionStatus == paymentCollectionStatus) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -1362,25 +702,27 @@ mixin _$Sale {
   int get hashCode => Object.hash(
       runtimeType,
       id,
-      fuelType,
-      litres,
+      customerId,
+      pumpAttendantId,
+      stockId,
+      companyId,
+      amount,
+      quantity,
       unitPrice,
-      price,
-      discount,
-      netPrice,
-      currencyCode,
-      currencySymbol,
-      status,
       paymentMethod,
-      pointsEarned,
-      customerName,
-      pumpAttendantName,
-      stationName,
+      accountNumber,
+      accountName,
+      status,
+      paymentExternalRef,
+      moolreTransactionId,
+      paymentLink,
+      paymentOtpRequired,
+      paymentCollectionStatus,
       createdAt);
 
   @override
   String toString() {
-    return 'Sale(id: $id, fuelType: $fuelType, litres: $litres, unitPrice: $unitPrice, price: $price, discount: $discount, netPrice: $netPrice, currencyCode: $currencyCode, currencySymbol: $currencySymbol, status: $status, paymentMethod: $paymentMethod, pointsEarned: $pointsEarned, customerName: $customerName, pumpAttendantName: $pumpAttendantName, stationName: $stationName, createdAt: $createdAt)';
+    return 'Sale(id: $id, customerId: $customerId, pumpAttendantId: $pumpAttendantId, stockId: $stockId, companyId: $companyId, amount: $amount, quantity: $quantity, unitPrice: $unitPrice, paymentMethod: $paymentMethod, accountNumber: $accountNumber, accountName: $accountName, status: $status, paymentExternalRef: $paymentExternalRef, moolreTransactionId: $moolreTransactionId, paymentLink: $paymentLink, paymentOtpRequired: $paymentOtpRequired, paymentCollectionStatus: $paymentCollectionStatus, createdAt: $createdAt)';
   }
 }
 
@@ -1391,20 +733,22 @@ abstract mixin class $SaleCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String? fuelType,
-      double litres,
+      String customerId,
+      String pumpAttendantId,
+      String stockId,
+      String companyId,
+      double amount,
+      double? quantity,
       double? unitPrice,
-      double? price,
-      double? discount,
-      double? netPrice,
-      String? currencyCode,
-      String? currencySymbol,
-      String? status,
       String? paymentMethod,
-      int? pointsEarned,
-      String? customerName,
-      String? pumpAttendantName,
-      String? stationName,
+      String? accountNumber,
+      String? accountName,
+      String? status,
+      String? paymentExternalRef,
+      String? moolreTransactionId,
+      String? paymentLink,
+      bool paymentOtpRequired,
+      SalePaymentCollectionStatus? paymentCollectionStatus,
       String? createdAt});
 }
 
@@ -1421,20 +765,22 @@ class _$SaleCopyWithImpl<$Res> implements $SaleCopyWith<$Res> {
   @override
   $Res call({
     Object? id = null,
-    Object? fuelType = freezed,
-    Object? litres = null,
+    Object? customerId = null,
+    Object? pumpAttendantId = null,
+    Object? stockId = null,
+    Object? companyId = null,
+    Object? amount = null,
+    Object? quantity = freezed,
     Object? unitPrice = freezed,
-    Object? price = freezed,
-    Object? discount = freezed,
-    Object? netPrice = freezed,
-    Object? currencyCode = freezed,
-    Object? currencySymbol = freezed,
-    Object? status = freezed,
     Object? paymentMethod = freezed,
-    Object? pointsEarned = freezed,
-    Object? customerName = freezed,
-    Object? pumpAttendantName = freezed,
-    Object? stationName = freezed,
+    Object? accountNumber = freezed,
+    Object? accountName = freezed,
+    Object? status = freezed,
+    Object? paymentExternalRef = freezed,
+    Object? moolreTransactionId = freezed,
+    Object? paymentLink = freezed,
+    Object? paymentOtpRequired = null,
+    Object? paymentCollectionStatus = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(_self.copyWith(
@@ -1442,62 +788,70 @@ class _$SaleCopyWithImpl<$Res> implements $SaleCopyWith<$Res> {
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      fuelType: freezed == fuelType
-          ? _self.fuelType
-          : fuelType // ignore: cast_nullable_to_non_nullable
-              as String?,
-      litres: null == litres
-          ? _self.litres
-          : litres // ignore: cast_nullable_to_non_nullable
+      customerId: null == customerId
+          ? _self.customerId
+          : customerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      pumpAttendantId: null == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
+              as String,
+      stockId: null == stockId
+          ? _self.stockId
+          : stockId // ignore: cast_nullable_to_non_nullable
+              as String,
+      companyId: null == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
+              as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
               as double,
+      quantity: freezed == quantity
+          ? _self.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as double?,
       unitPrice: freezed == unitPrice
           ? _self.unitPrice
           : unitPrice // ignore: cast_nullable_to_non_nullable
               as double?,
-      price: freezed == price
-          ? _self.price
-          : price // ignore: cast_nullable_to_non_nullable
-              as double?,
-      discount: freezed == discount
-          ? _self.discount
-          : discount // ignore: cast_nullable_to_non_nullable
-              as double?,
-      netPrice: freezed == netPrice
-          ? _self.netPrice
-          : netPrice // ignore: cast_nullable_to_non_nullable
-              as double?,
-      currencyCode: freezed == currencyCode
-          ? _self.currencyCode
-          : currencyCode // ignore: cast_nullable_to_non_nullable
+      paymentMethod: freezed == paymentMethod
+          ? _self.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
               as String?,
-      currencySymbol: freezed == currencySymbol
-          ? _self.currencySymbol
-          : currencySymbol // ignore: cast_nullable_to_non_nullable
+      accountNumber: freezed == accountNumber
+          ? _self.accountNumber
+          : accountNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
               as String?,
       status: freezed == status
           ? _self.status
           : status // ignore: cast_nullable_to_non_nullable
               as String?,
-      paymentMethod: freezed == paymentMethod
-          ? _self.paymentMethod
-          : paymentMethod // ignore: cast_nullable_to_non_nullable
+      paymentExternalRef: freezed == paymentExternalRef
+          ? _self.paymentExternalRef
+          : paymentExternalRef // ignore: cast_nullable_to_non_nullable
               as String?,
-      pointsEarned: freezed == pointsEarned
-          ? _self.pointsEarned
-          : pointsEarned // ignore: cast_nullable_to_non_nullable
-              as int?,
-      customerName: freezed == customerName
-          ? _self.customerName
-          : customerName // ignore: cast_nullable_to_non_nullable
+      moolreTransactionId: freezed == moolreTransactionId
+          ? _self.moolreTransactionId
+          : moolreTransactionId // ignore: cast_nullable_to_non_nullable
               as String?,
-      pumpAttendantName: freezed == pumpAttendantName
-          ? _self.pumpAttendantName
-          : pumpAttendantName // ignore: cast_nullable_to_non_nullable
+      paymentLink: freezed == paymentLink
+          ? _self.paymentLink
+          : paymentLink // ignore: cast_nullable_to_non_nullable
               as String?,
-      stationName: freezed == stationName
-          ? _self.stationName
-          : stationName // ignore: cast_nullable_to_non_nullable
-              as String?,
+      paymentOtpRequired: null == paymentOtpRequired
+          ? _self.paymentOtpRequired
+          : paymentOtpRequired // ignore: cast_nullable_to_non_nullable
+              as bool,
+      paymentCollectionStatus: freezed == paymentCollectionStatus
+          ? _self.paymentCollectionStatus
+          : paymentCollectionStatus // ignore: cast_nullable_to_non_nullable
+              as SalePaymentCollectionStatus?,
       createdAt: freezed == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -1601,20 +955,22 @@ extension SalePatterns on Sale {
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
             String id,
-            String? fuelType,
-            double litres,
+            String customerId,
+            String pumpAttendantId,
+            String stockId,
+            String companyId,
+            double amount,
+            double? quantity,
             double? unitPrice,
-            double? price,
-            double? discount,
-            double? netPrice,
-            String? currencyCode,
-            String? currencySymbol,
-            String? status,
             String? paymentMethod,
-            int? pointsEarned,
-            String? customerName,
-            String? pumpAttendantName,
-            String? stationName,
+            String? accountNumber,
+            String? accountName,
+            String? status,
+            String? paymentExternalRef,
+            String? moolreTransactionId,
+            String? paymentLink,
+            bool paymentOtpRequired,
+            SalePaymentCollectionStatus? paymentCollectionStatus,
             String? createdAt)?
         $default, {
     required TResult orElse(),
@@ -1624,20 +980,22 @@ extension SalePatterns on Sale {
       case _Sale() when $default != null:
         return $default(
             _that.id,
-            _that.fuelType,
-            _that.litres,
+            _that.customerId,
+            _that.pumpAttendantId,
+            _that.stockId,
+            _that.companyId,
+            _that.amount,
+            _that.quantity,
             _that.unitPrice,
-            _that.price,
-            _that.discount,
-            _that.netPrice,
-            _that.currencyCode,
-            _that.currencySymbol,
-            _that.status,
             _that.paymentMethod,
-            _that.pointsEarned,
-            _that.customerName,
-            _that.pumpAttendantName,
-            _that.stationName,
+            _that.accountNumber,
+            _that.accountName,
+            _that.status,
+            _that.paymentExternalRef,
+            _that.moolreTransactionId,
+            _that.paymentLink,
+            _that.paymentOtpRequired,
+            _that.paymentCollectionStatus,
             _that.createdAt);
       case _:
         return orElse();
@@ -1661,20 +1019,22 @@ extension SalePatterns on Sale {
   TResult when<TResult extends Object?>(
     TResult Function(
             String id,
-            String? fuelType,
-            double litres,
+            String customerId,
+            String pumpAttendantId,
+            String stockId,
+            String companyId,
+            double amount,
+            double? quantity,
             double? unitPrice,
-            double? price,
-            double? discount,
-            double? netPrice,
-            String? currencyCode,
-            String? currencySymbol,
-            String? status,
             String? paymentMethod,
-            int? pointsEarned,
-            String? customerName,
-            String? pumpAttendantName,
-            String? stationName,
+            String? accountNumber,
+            String? accountName,
+            String? status,
+            String? paymentExternalRef,
+            String? moolreTransactionId,
+            String? paymentLink,
+            bool paymentOtpRequired,
+            SalePaymentCollectionStatus? paymentCollectionStatus,
             String? createdAt)
         $default,
   ) {
@@ -1683,20 +1043,22 @@ extension SalePatterns on Sale {
       case _Sale():
         return $default(
             _that.id,
-            _that.fuelType,
-            _that.litres,
+            _that.customerId,
+            _that.pumpAttendantId,
+            _that.stockId,
+            _that.companyId,
+            _that.amount,
+            _that.quantity,
             _that.unitPrice,
-            _that.price,
-            _that.discount,
-            _that.netPrice,
-            _that.currencyCode,
-            _that.currencySymbol,
-            _that.status,
             _that.paymentMethod,
-            _that.pointsEarned,
-            _that.customerName,
-            _that.pumpAttendantName,
-            _that.stationName,
+            _that.accountNumber,
+            _that.accountName,
+            _that.status,
+            _that.paymentExternalRef,
+            _that.moolreTransactionId,
+            _that.paymentLink,
+            _that.paymentOtpRequired,
+            _that.paymentCollectionStatus,
             _that.createdAt);
       case _:
         throw StateError('Unexpected subclass');
@@ -1719,20 +1081,22 @@ extension SalePatterns on Sale {
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
             String id,
-            String? fuelType,
-            double litres,
+            String customerId,
+            String pumpAttendantId,
+            String stockId,
+            String companyId,
+            double amount,
+            double? quantity,
             double? unitPrice,
-            double? price,
-            double? discount,
-            double? netPrice,
-            String? currencyCode,
-            String? currencySymbol,
-            String? status,
             String? paymentMethod,
-            int? pointsEarned,
-            String? customerName,
-            String? pumpAttendantName,
-            String? stationName,
+            String? accountNumber,
+            String? accountName,
+            String? status,
+            String? paymentExternalRef,
+            String? moolreTransactionId,
+            String? paymentLink,
+            bool paymentOtpRequired,
+            SalePaymentCollectionStatus? paymentCollectionStatus,
             String? createdAt)?
         $default,
   ) {
@@ -1741,20 +1105,22 @@ extension SalePatterns on Sale {
       case _Sale() when $default != null:
         return $default(
             _that.id,
-            _that.fuelType,
-            _that.litres,
+            _that.customerId,
+            _that.pumpAttendantId,
+            _that.stockId,
+            _that.companyId,
+            _that.amount,
+            _that.quantity,
             _that.unitPrice,
-            _that.price,
-            _that.discount,
-            _that.netPrice,
-            _that.currencyCode,
-            _that.currencySymbol,
-            _that.status,
             _that.paymentMethod,
-            _that.pointsEarned,
-            _that.customerName,
-            _that.pumpAttendantName,
-            _that.stationName,
+            _that.accountNumber,
+            _that.accountName,
+            _that.status,
+            _that.paymentExternalRef,
+            _that.moolreTransactionId,
+            _that.paymentLink,
+            _that.paymentOtpRequired,
+            _that.paymentCollectionStatus,
             _that.createdAt);
       case _:
         return null;
@@ -1767,53 +1133,60 @@ extension SalePatterns on Sale {
 class _Sale extends Sale {
   const _Sale(
       {required this.id,
-      this.fuelType,
-      required this.litres,
+      required this.customerId,
+      required this.pumpAttendantId,
+      required this.stockId,
+      required this.companyId,
+      required this.amount,
+      this.quantity,
       this.unitPrice,
-      this.price,
-      this.discount,
-      this.netPrice,
-      this.currencyCode,
-      this.currencySymbol,
-      this.status,
       this.paymentMethod,
-      this.pointsEarned,
-      this.customerName,
-      this.pumpAttendantName,
-      this.stationName,
+      this.accountNumber,
+      this.accountName,
+      this.status,
+      this.paymentExternalRef,
+      this.moolreTransactionId,
+      this.paymentLink,
+      this.paymentOtpRequired = false,
+      this.paymentCollectionStatus,
       this.createdAt})
       : super._();
 
   @override
   final String id;
   @override
-  final String? fuelType;
+  final String customerId;
   @override
-  final double litres;
+  final String pumpAttendantId;
+  @override
+  final String stockId;
+  @override
+  final String companyId;
+  @override
+  final double amount;
+  @override
+  final double? quantity;
   @override
   final double? unitPrice;
   @override
-  final double? price;
+  final String? paymentMethod;
   @override
-  final double? discount;
+  final String? accountNumber;
   @override
-  final double? netPrice;
-  @override
-  final String? currencyCode;
-  @override
-  final String? currencySymbol;
+  final String? accountName;
   @override
   final String? status;
   @override
-  final String? paymentMethod;
+  final String? paymentExternalRef;
   @override
-  final int? pointsEarned;
+  final String? moolreTransactionId;
   @override
-  final String? customerName;
+  final String? paymentLink;
   @override
-  final String? pumpAttendantName;
+  @JsonKey()
+  final bool paymentOtpRequired;
   @override
-  final String? stationName;
+  final SalePaymentCollectionStatus? paymentCollectionStatus;
   @override
   final String? createdAt;
 
@@ -1831,31 +1204,36 @@ class _Sale extends Sale {
         (other.runtimeType == runtimeType &&
             other is _Sale &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.fuelType, fuelType) ||
-                other.fuelType == fuelType) &&
-            (identical(other.litres, litres) || other.litres == litres) &&
+            (identical(other.customerId, customerId) ||
+                other.customerId == customerId) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
+            (identical(other.stockId, stockId) || other.stockId == stockId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.quantity, quantity) ||
+                other.quantity == quantity) &&
             (identical(other.unitPrice, unitPrice) ||
                 other.unitPrice == unitPrice) &&
-            (identical(other.price, price) || other.price == price) &&
-            (identical(other.discount, discount) ||
-                other.discount == discount) &&
-            (identical(other.netPrice, netPrice) ||
-                other.netPrice == netPrice) &&
-            (identical(other.currencyCode, currencyCode) ||
-                other.currencyCode == currencyCode) &&
-            (identical(other.currencySymbol, currencySymbol) ||
-                other.currencySymbol == currencySymbol) &&
-            (identical(other.status, status) || other.status == status) &&
             (identical(other.paymentMethod, paymentMethod) ||
                 other.paymentMethod == paymentMethod) &&
-            (identical(other.pointsEarned, pointsEarned) ||
-                other.pointsEarned == pointsEarned) &&
-            (identical(other.customerName, customerName) ||
-                other.customerName == customerName) &&
-            (identical(other.pumpAttendantName, pumpAttendantName) ||
-                other.pumpAttendantName == pumpAttendantName) &&
-            (identical(other.stationName, stationName) ||
-                other.stationName == stationName) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.paymentExternalRef, paymentExternalRef) ||
+                other.paymentExternalRef == paymentExternalRef) &&
+            (identical(other.moolreTransactionId, moolreTransactionId) ||
+                other.moolreTransactionId == moolreTransactionId) &&
+            (identical(other.paymentLink, paymentLink) ||
+                other.paymentLink == paymentLink) &&
+            (identical(other.paymentOtpRequired, paymentOtpRequired) ||
+                other.paymentOtpRequired == paymentOtpRequired) &&
+            (identical(
+                    other.paymentCollectionStatus, paymentCollectionStatus) ||
+                other.paymentCollectionStatus == paymentCollectionStatus) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -1864,25 +1242,27 @@ class _Sale extends Sale {
   int get hashCode => Object.hash(
       runtimeType,
       id,
-      fuelType,
-      litres,
+      customerId,
+      pumpAttendantId,
+      stockId,
+      companyId,
+      amount,
+      quantity,
       unitPrice,
-      price,
-      discount,
-      netPrice,
-      currencyCode,
-      currencySymbol,
-      status,
       paymentMethod,
-      pointsEarned,
-      customerName,
-      pumpAttendantName,
-      stationName,
+      accountNumber,
+      accountName,
+      status,
+      paymentExternalRef,
+      moolreTransactionId,
+      paymentLink,
+      paymentOtpRequired,
+      paymentCollectionStatus,
       createdAt);
 
   @override
   String toString() {
-    return 'Sale(id: $id, fuelType: $fuelType, litres: $litres, unitPrice: $unitPrice, price: $price, discount: $discount, netPrice: $netPrice, currencyCode: $currencyCode, currencySymbol: $currencySymbol, status: $status, paymentMethod: $paymentMethod, pointsEarned: $pointsEarned, customerName: $customerName, pumpAttendantName: $pumpAttendantName, stationName: $stationName, createdAt: $createdAt)';
+    return 'Sale(id: $id, customerId: $customerId, pumpAttendantId: $pumpAttendantId, stockId: $stockId, companyId: $companyId, amount: $amount, quantity: $quantity, unitPrice: $unitPrice, paymentMethod: $paymentMethod, accountNumber: $accountNumber, accountName: $accountName, status: $status, paymentExternalRef: $paymentExternalRef, moolreTransactionId: $moolreTransactionId, paymentLink: $paymentLink, paymentOtpRequired: $paymentOtpRequired, paymentCollectionStatus: $paymentCollectionStatus, createdAt: $createdAt)';
   }
 }
 
@@ -1894,20 +1274,22 @@ abstract mixin class _$SaleCopyWith<$Res> implements $SaleCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      String? fuelType,
-      double litres,
+      String customerId,
+      String pumpAttendantId,
+      String stockId,
+      String companyId,
+      double amount,
+      double? quantity,
       double? unitPrice,
-      double? price,
-      double? discount,
-      double? netPrice,
-      String? currencyCode,
-      String? currencySymbol,
-      String? status,
       String? paymentMethod,
-      int? pointsEarned,
-      String? customerName,
-      String? pumpAttendantName,
-      String? stationName,
+      String? accountNumber,
+      String? accountName,
+      String? status,
+      String? paymentExternalRef,
+      String? moolreTransactionId,
+      String? paymentLink,
+      bool paymentOtpRequired,
+      SalePaymentCollectionStatus? paymentCollectionStatus,
       String? createdAt});
 }
 
@@ -1924,20 +1306,22 @@ class __$SaleCopyWithImpl<$Res> implements _$SaleCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   $Res call({
     Object? id = null,
-    Object? fuelType = freezed,
-    Object? litres = null,
+    Object? customerId = null,
+    Object? pumpAttendantId = null,
+    Object? stockId = null,
+    Object? companyId = null,
+    Object? amount = null,
+    Object? quantity = freezed,
     Object? unitPrice = freezed,
-    Object? price = freezed,
-    Object? discount = freezed,
-    Object? netPrice = freezed,
-    Object? currencyCode = freezed,
-    Object? currencySymbol = freezed,
-    Object? status = freezed,
     Object? paymentMethod = freezed,
-    Object? pointsEarned = freezed,
-    Object? customerName = freezed,
-    Object? pumpAttendantName = freezed,
-    Object? stationName = freezed,
+    Object? accountNumber = freezed,
+    Object? accountName = freezed,
+    Object? status = freezed,
+    Object? paymentExternalRef = freezed,
+    Object? moolreTransactionId = freezed,
+    Object? paymentLink = freezed,
+    Object? paymentOtpRequired = null,
+    Object? paymentCollectionStatus = freezed,
     Object? createdAt = freezed,
   }) {
     return _then(_Sale(
@@ -1945,62 +1329,70 @@ class __$SaleCopyWithImpl<$Res> implements _$SaleCopyWith<$Res> {
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      fuelType: freezed == fuelType
-          ? _self.fuelType
-          : fuelType // ignore: cast_nullable_to_non_nullable
-              as String?,
-      litres: null == litres
-          ? _self.litres
-          : litres // ignore: cast_nullable_to_non_nullable
+      customerId: null == customerId
+          ? _self.customerId
+          : customerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      pumpAttendantId: null == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
+              as String,
+      stockId: null == stockId
+          ? _self.stockId
+          : stockId // ignore: cast_nullable_to_non_nullable
+              as String,
+      companyId: null == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
+              as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
               as double,
+      quantity: freezed == quantity
+          ? _self.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as double?,
       unitPrice: freezed == unitPrice
           ? _self.unitPrice
           : unitPrice // ignore: cast_nullable_to_non_nullable
               as double?,
-      price: freezed == price
-          ? _self.price
-          : price // ignore: cast_nullable_to_non_nullable
-              as double?,
-      discount: freezed == discount
-          ? _self.discount
-          : discount // ignore: cast_nullable_to_non_nullable
-              as double?,
-      netPrice: freezed == netPrice
-          ? _self.netPrice
-          : netPrice // ignore: cast_nullable_to_non_nullable
-              as double?,
-      currencyCode: freezed == currencyCode
-          ? _self.currencyCode
-          : currencyCode // ignore: cast_nullable_to_non_nullable
+      paymentMethod: freezed == paymentMethod
+          ? _self.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
               as String?,
-      currencySymbol: freezed == currencySymbol
-          ? _self.currencySymbol
-          : currencySymbol // ignore: cast_nullable_to_non_nullable
+      accountNumber: freezed == accountNumber
+          ? _self.accountNumber
+          : accountNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
               as String?,
       status: freezed == status
           ? _self.status
           : status // ignore: cast_nullable_to_non_nullable
               as String?,
-      paymentMethod: freezed == paymentMethod
-          ? _self.paymentMethod
-          : paymentMethod // ignore: cast_nullable_to_non_nullable
+      paymentExternalRef: freezed == paymentExternalRef
+          ? _self.paymentExternalRef
+          : paymentExternalRef // ignore: cast_nullable_to_non_nullable
               as String?,
-      pointsEarned: freezed == pointsEarned
-          ? _self.pointsEarned
-          : pointsEarned // ignore: cast_nullable_to_non_nullable
-              as int?,
-      customerName: freezed == customerName
-          ? _self.customerName
-          : customerName // ignore: cast_nullable_to_non_nullable
+      moolreTransactionId: freezed == moolreTransactionId
+          ? _self.moolreTransactionId
+          : moolreTransactionId // ignore: cast_nullable_to_non_nullable
               as String?,
-      pumpAttendantName: freezed == pumpAttendantName
-          ? _self.pumpAttendantName
-          : pumpAttendantName // ignore: cast_nullable_to_non_nullable
+      paymentLink: freezed == paymentLink
+          ? _self.paymentLink
+          : paymentLink // ignore: cast_nullable_to_non_nullable
               as String?,
-      stationName: freezed == stationName
-          ? _self.stationName
-          : stationName // ignore: cast_nullable_to_non_nullable
-              as String?,
+      paymentOtpRequired: null == paymentOtpRequired
+          ? _self.paymentOtpRequired
+          : paymentOtpRequired // ignore: cast_nullable_to_non_nullable
+              as bool,
+      paymentCollectionStatus: freezed == paymentCollectionStatus
+          ? _self.paymentCollectionStatus
+          : paymentCollectionStatus // ignore: cast_nullable_to_non_nullable
+              as SalePaymentCollectionStatus?,
       createdAt: freezed == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -2011,12 +1403,14 @@ class __$SaleCopyWithImpl<$Res> implements _$SaleCopyWith<$Res> {
 
 /// @nodoc
 mixin _$CreateSaleRequest {
-  String get fuelPriceId;
   String get customerId;
-  String get pumpId;
+  String get pumpAttendantId;
+  String get stockId;
+  String get companyId;
   double get amount;
-  bool get usePointsDiscount;
-  double get discount;
+  String? get paymentMethod;
+  String? get accountNumber;
+  String? get accountName;
 
   /// Create a copy of CreateSaleRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -2026,34 +1420,34 @@ mixin _$CreateSaleRequest {
       _$CreateSaleRequestCopyWithImpl<CreateSaleRequest>(
           this as CreateSaleRequest, _$identity);
 
-  /// Serializes this CreateSaleRequest to a JSON map.
-  Map<String, dynamic> toJson();
-
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is CreateSaleRequest &&
-            (identical(other.fuelPriceId, fuelPriceId) ||
-                other.fuelPriceId == fuelPriceId) &&
             (identical(other.customerId, customerId) ||
                 other.customerId == customerId) &&
-            (identical(other.pumpId, pumpId) || other.pumpId == pumpId) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
+            (identical(other.stockId, stockId) || other.stockId == stockId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId) &&
             (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.usePointsDiscount, usePointsDiscount) ||
-                other.usePointsDiscount == usePointsDiscount) &&
-            (identical(other.discount, discount) ||
-                other.discount == discount));
+            (identical(other.paymentMethod, paymentMethod) ||
+                other.paymentMethod == paymentMethod) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, fuelPriceId, customerId, pumpId,
-      amount, usePointsDiscount, discount);
+  int get hashCode => Object.hash(runtimeType, customerId, pumpAttendantId,
+      stockId, companyId, amount, paymentMethod, accountNumber, accountName);
 
   @override
   String toString() {
-    return 'CreateSaleRequest(fuelPriceId: $fuelPriceId, customerId: $customerId, pumpId: $pumpId, amount: $amount, usePointsDiscount: $usePointsDiscount, discount: $discount)';
+    return 'CreateSaleRequest(customerId: $customerId, pumpAttendantId: $pumpAttendantId, stockId: $stockId, companyId: $companyId, amount: $amount, paymentMethod: $paymentMethod, accountNumber: $accountNumber, accountName: $accountName)';
   }
 }
 
@@ -2064,12 +1458,14 @@ abstract mixin class $CreateSaleRequestCopyWith<$Res> {
       _$CreateSaleRequestCopyWithImpl;
   @useResult
   $Res call(
-      {String fuelPriceId,
-      String customerId,
-      String pumpId,
+      {String customerId,
+      String pumpAttendantId,
+      String stockId,
+      String companyId,
       double amount,
-      bool usePointsDiscount,
-      double discount});
+      String? paymentMethod,
+      String? accountNumber,
+      String? accountName});
 }
 
 /// @nodoc
@@ -2085,38 +1481,48 @@ class _$CreateSaleRequestCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? fuelPriceId = null,
     Object? customerId = null,
-    Object? pumpId = null,
+    Object? pumpAttendantId = null,
+    Object? stockId = null,
+    Object? companyId = null,
     Object? amount = null,
-    Object? usePointsDiscount = null,
-    Object? discount = null,
+    Object? paymentMethod = freezed,
+    Object? accountNumber = freezed,
+    Object? accountName = freezed,
   }) {
     return _then(_self.copyWith(
-      fuelPriceId: null == fuelPriceId
-          ? _self.fuelPriceId
-          : fuelPriceId // ignore: cast_nullable_to_non_nullable
-              as String,
       customerId: null == customerId
           ? _self.customerId
           : customerId // ignore: cast_nullable_to_non_nullable
               as String,
-      pumpId: null == pumpId
-          ? _self.pumpId
-          : pumpId // ignore: cast_nullable_to_non_nullable
+      pumpAttendantId: null == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
+              as String,
+      stockId: null == stockId
+          ? _self.stockId
+          : stockId // ignore: cast_nullable_to_non_nullable
+              as String,
+      companyId: null == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
               as String,
       amount: null == amount
           ? _self.amount
           : amount // ignore: cast_nullable_to_non_nullable
               as double,
-      usePointsDiscount: null == usePointsDiscount
-          ? _self.usePointsDiscount
-          : usePointsDiscount // ignore: cast_nullable_to_non_nullable
-              as bool,
-      discount: null == discount
-          ? _self.discount
-          : discount // ignore: cast_nullable_to_non_nullable
-              as double,
+      paymentMethod: freezed == paymentMethod
+          ? _self.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountNumber: freezed == accountNumber
+          ? _self.accountNumber
+          : accountNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -2214,16 +1620,30 @@ extension CreateSaleRequestPatterns on CreateSaleRequest {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String fuelPriceId, String customerId, String pumpId,
-            double amount, bool usePointsDiscount, double discount)?
+    TResult Function(
+            String customerId,
+            String pumpAttendantId,
+            String stockId,
+            String companyId,
+            double amount,
+            String? paymentMethod,
+            String? accountNumber,
+            String? accountName)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _CreateSaleRequest() when $default != null:
-        return $default(_that.fuelPriceId, _that.customerId, _that.pumpId,
-            _that.amount, _that.usePointsDiscount, _that.discount);
+        return $default(
+            _that.customerId,
+            _that.pumpAttendantId,
+            _that.stockId,
+            _that.companyId,
+            _that.amount,
+            _that.paymentMethod,
+            _that.accountNumber,
+            _that.accountName);
       case _:
         return orElse();
     }
@@ -2244,402 +1664,29 @@ extension CreateSaleRequestPatterns on CreateSaleRequest {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String fuelPriceId, String customerId, String pumpId,
-            double amount, bool usePointsDiscount, double discount)
+    TResult Function(
+            String customerId,
+            String pumpAttendantId,
+            String stockId,
+            String companyId,
+            double amount,
+            String? paymentMethod,
+            String? accountNumber,
+            String? accountName)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _CreateSaleRequest():
-        return $default(_that.fuelPriceId, _that.customerId, _that.pumpId,
-            _that.amount, _that.usePointsDiscount, _that.discount);
-      case _:
-        throw StateError('Unexpected subclass');
-    }
-  }
-
-  /// A variant of `when` that fallback to returning `null`
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case _:
-  ///     return null;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String fuelPriceId, String customerId, String pumpId,
-            double amount, bool usePointsDiscount, double discount)?
-        $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _CreateSaleRequest() when $default != null:
-        return $default(_that.fuelPriceId, _that.customerId, _that.pumpId,
-            _that.amount, _that.usePointsDiscount, _that.discount);
-      case _:
-        return null;
-    }
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _CreateSaleRequest implements CreateSaleRequest {
-  const _CreateSaleRequest(
-      {required this.fuelPriceId,
-      required this.customerId,
-      required this.pumpId,
-      required this.amount,
-      this.usePointsDiscount = false,
-      this.discount = 0});
-  factory _CreateSaleRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateSaleRequestFromJson(json);
-
-  @override
-  final String fuelPriceId;
-  @override
-  final String customerId;
-  @override
-  final String pumpId;
-  @override
-  final double amount;
-  @override
-  @JsonKey()
-  final bool usePointsDiscount;
-  @override
-  @JsonKey()
-  final double discount;
-
-  /// Create a copy of CreateSaleRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  _$CreateSaleRequestCopyWith<_CreateSaleRequest> get copyWith =>
-      __$CreateSaleRequestCopyWithImpl<_CreateSaleRequest>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$CreateSaleRequestToJson(
-      this,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _CreateSaleRequest &&
-            (identical(other.fuelPriceId, fuelPriceId) ||
-                other.fuelPriceId == fuelPriceId) &&
-            (identical(other.customerId, customerId) ||
-                other.customerId == customerId) &&
-            (identical(other.pumpId, pumpId) || other.pumpId == pumpId) &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.usePointsDiscount, usePointsDiscount) ||
-                other.usePointsDiscount == usePointsDiscount) &&
-            (identical(other.discount, discount) ||
-                other.discount == discount));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, fuelPriceId, customerId, pumpId,
-      amount, usePointsDiscount, discount);
-
-  @override
-  String toString() {
-    return 'CreateSaleRequest(fuelPriceId: $fuelPriceId, customerId: $customerId, pumpId: $pumpId, amount: $amount, usePointsDiscount: $usePointsDiscount, discount: $discount)';
-  }
-}
-
-/// @nodoc
-abstract mixin class _$CreateSaleRequestCopyWith<$Res>
-    implements $CreateSaleRequestCopyWith<$Res> {
-  factory _$CreateSaleRequestCopyWith(
-          _CreateSaleRequest value, $Res Function(_CreateSaleRequest) _then) =
-      __$CreateSaleRequestCopyWithImpl;
-  @override
-  @useResult
-  $Res call(
-      {String fuelPriceId,
-      String customerId,
-      String pumpId,
-      double amount,
-      bool usePointsDiscount,
-      double discount});
-}
-
-/// @nodoc
-class __$CreateSaleRequestCopyWithImpl<$Res>
-    implements _$CreateSaleRequestCopyWith<$Res> {
-  __$CreateSaleRequestCopyWithImpl(this._self, this._then);
-
-  final _CreateSaleRequest _self;
-  final $Res Function(_CreateSaleRequest) _then;
-
-  /// Create a copy of CreateSaleRequest
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $Res call({
-    Object? fuelPriceId = null,
-    Object? customerId = null,
-    Object? pumpId = null,
-    Object? amount = null,
-    Object? usePointsDiscount = null,
-    Object? discount = null,
-  }) {
-    return _then(_CreateSaleRequest(
-      fuelPriceId: null == fuelPriceId
-          ? _self.fuelPriceId
-          : fuelPriceId // ignore: cast_nullable_to_non_nullable
-              as String,
-      customerId: null == customerId
-          ? _self.customerId
-          : customerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      pumpId: null == pumpId
-          ? _self.pumpId
-          : pumpId // ignore: cast_nullable_to_non_nullable
-              as String,
-      amount: null == amount
-          ? _self.amount
-          : amount // ignore: cast_nullable_to_non_nullable
-              as double,
-      usePointsDiscount: null == usePointsDiscount
-          ? _self.usePointsDiscount
-          : usePointsDiscount // ignore: cast_nullable_to_non_nullable
-              as bool,
-      discount: null == discount
-          ? _self.discount
-          : discount // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
-  }
-}
-
-/// @nodoc
-mixin _$CardInitializeResponse {
-  String get authorizationUrl;
-  String get accessCode;
-  String get reference;
-
-  /// Create a copy of CardInitializeResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @pragma('vm:prefer-inline')
-  $CardInitializeResponseCopyWith<CardInitializeResponse> get copyWith =>
-      _$CardInitializeResponseCopyWithImpl<CardInitializeResponse>(
-          this as CardInitializeResponse, _$identity);
-
-  /// Serializes this CardInitializeResponse to a JSON map.
-  Map<String, dynamic> toJson();
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is CardInitializeResponse &&
-            (identical(other.authorizationUrl, authorizationUrl) ||
-                other.authorizationUrl == authorizationUrl) &&
-            (identical(other.accessCode, accessCode) ||
-                other.accessCode == accessCode) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, authorizationUrl, accessCode, reference);
-
-  @override
-  String toString() {
-    return 'CardInitializeResponse(authorizationUrl: $authorizationUrl, accessCode: $accessCode, reference: $reference)';
-  }
-}
-
-/// @nodoc
-abstract mixin class $CardInitializeResponseCopyWith<$Res> {
-  factory $CardInitializeResponseCopyWith(CardInitializeResponse value,
-          $Res Function(CardInitializeResponse) _then) =
-      _$CardInitializeResponseCopyWithImpl;
-  @useResult
-  $Res call({String authorizationUrl, String accessCode, String reference});
-}
-
-/// @nodoc
-class _$CardInitializeResponseCopyWithImpl<$Res>
-    implements $CardInitializeResponseCopyWith<$Res> {
-  _$CardInitializeResponseCopyWithImpl(this._self, this._then);
-
-  final CardInitializeResponse _self;
-  final $Res Function(CardInitializeResponse) _then;
-
-  /// Create a copy of CardInitializeResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? authorizationUrl = null,
-    Object? accessCode = null,
-    Object? reference = null,
-  }) {
-    return _then(_self.copyWith(
-      authorizationUrl: null == authorizationUrl
-          ? _self.authorizationUrl
-          : authorizationUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      accessCode: null == accessCode
-          ? _self.accessCode
-          : accessCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      reference: null == reference
-          ? _self.reference
-          : reference // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// Adds pattern-matching-related methods to [CardInitializeResponse].
-extension CardInitializeResponsePatterns on CardInitializeResponse {
-  /// A variant of `map` that fallback to returning `orElse`.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case _:
-  ///     return orElse();
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_CardInitializeResponse value)? $default, {
-    required TResult orElse(),
-  }) {
-    final _that = this;
-    switch (_that) {
-      case _CardInitializeResponse() when $default != null:
-        return $default(_that);
-      case _:
-        return orElse();
-    }
-  }
-
-  /// A `switch`-like method, using callbacks.
-  ///
-  /// Callbacks receives the raw object, upcasted.
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case final Subclass2 value:
-  ///     return ...;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_CardInitializeResponse value) $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _CardInitializeResponse():
-        return $default(_that);
-      case _:
-        throw StateError('Unexpected subclass');
-    }
-  }
-
-  /// A variant of `map` that fallback to returning `null`.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case final Subclass value:
-  ///     return ...;
-  ///   case _:
-  ///     return null;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_CardInitializeResponse value)? $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _CardInitializeResponse() when $default != null:
-        return $default(_that);
-      case _:
-        return null;
-    }
-  }
-
-  /// A variant of `when` that fallback to an `orElse` callback.
-  ///
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case _:
-  ///     return orElse();
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(
-            String authorizationUrl, String accessCode, String reference)?
-        $default, {
-    required TResult orElse(),
-  }) {
-    final _that = this;
-    switch (_that) {
-      case _CardInitializeResponse() when $default != null:
         return $default(
-            _that.authorizationUrl, _that.accessCode, _that.reference);
-      case _:
-        return orElse();
-    }
-  }
-
-  /// A `switch`-like method, using callbacks.
-  ///
-  /// As opposed to `map`, this offers destructuring.
-  /// It is equivalent to doing:
-  /// ```dart
-  /// switch (sealedClass) {
-  ///   case Subclass(:final field):
-  ///     return ...;
-  ///   case Subclass2(:final field2):
-  ///     return ...;
-  /// }
-  /// ```
-
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(
-            String authorizationUrl, String accessCode, String reference)
-        $default,
-  ) {
-    final _that = this;
-    switch (_that) {
-      case _CardInitializeResponse():
-        return $default(
-            _that.authorizationUrl, _that.accessCode, _that.reference);
+            _that.customerId,
+            _that.pumpAttendantId,
+            _that.stockId,
+            _that.companyId,
+            _that.amount,
+            _that.paymentMethod,
+            _that.accountNumber,
+            _that.accountName);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -2660,14 +1707,28 @@ extension CardInitializeResponsePatterns on CardInitializeResponse {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
-            String authorizationUrl, String accessCode, String reference)?
+            String customerId,
+            String pumpAttendantId,
+            String stockId,
+            String companyId,
+            double amount,
+            String? paymentMethod,
+            String? accountNumber,
+            String? accountName)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _CardInitializeResponse() when $default != null:
+      case _CreateSaleRequest() when $default != null:
         return $default(
-            _that.authorizationUrl, _that.accessCode, _that.reference);
+            _that.customerId,
+            _that.pumpAttendantId,
+            _that.stockId,
+            _that.companyId,
+            _that.amount,
+            _that.paymentMethod,
+            _that.accountNumber,
+            _that.accountName);
       case _:
         return null;
     }
@@ -2675,184 +1736,263 @@ extension CardInitializeResponsePatterns on CardInitializeResponse {
 }
 
 /// @nodoc
-@JsonSerializable()
-class _CardInitializeResponse implements CardInitializeResponse {
-  const _CardInitializeResponse(
-      {this.authorizationUrl = '', this.accessCode = '', this.reference = ''});
-  factory _CardInitializeResponse.fromJson(Map<String, dynamic> json) =>
-      _$CardInitializeResponseFromJson(json);
+
+class _CreateSaleRequest extends CreateSaleRequest {
+  const _CreateSaleRequest(
+      {required this.customerId,
+      required this.pumpAttendantId,
+      required this.stockId,
+      required this.companyId,
+      required this.amount,
+      this.paymentMethod,
+      this.accountNumber,
+      this.accountName})
+      : super._();
 
   @override
-  @JsonKey()
-  final String authorizationUrl;
+  final String customerId;
   @override
-  @JsonKey()
-  final String accessCode;
+  final String pumpAttendantId;
   @override
-  @JsonKey()
-  final String reference;
+  final String stockId;
+  @override
+  final String companyId;
+  @override
+  final double amount;
+  @override
+  final String? paymentMethod;
+  @override
+  final String? accountNumber;
+  @override
+  final String? accountName;
 
-  /// Create a copy of CardInitializeResponse
+  /// Create a copy of CreateSaleRequest
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$CardInitializeResponseCopyWith<_CardInitializeResponse> get copyWith =>
-      __$CardInitializeResponseCopyWithImpl<_CardInitializeResponse>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$CardInitializeResponseToJson(
-      this,
-    );
-  }
+  _$CreateSaleRequestCopyWith<_CreateSaleRequest> get copyWith =>
+      __$CreateSaleRequestCopyWithImpl<_CreateSaleRequest>(this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _CardInitializeResponse &&
-            (identical(other.authorizationUrl, authorizationUrl) ||
-                other.authorizationUrl == authorizationUrl) &&
-            (identical(other.accessCode, accessCode) ||
-                other.accessCode == accessCode) &&
-            (identical(other.reference, reference) ||
-                other.reference == reference));
+            other is _CreateSaleRequest &&
+            (identical(other.customerId, customerId) ||
+                other.customerId == customerId) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
+            (identical(other.stockId, stockId) || other.stockId == stockId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.paymentMethod, paymentMethod) ||
+                other.paymentMethod == paymentMethod) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, authorizationUrl, accessCode, reference);
+  int get hashCode => Object.hash(runtimeType, customerId, pumpAttendantId,
+      stockId, companyId, amount, paymentMethod, accountNumber, accountName);
 
   @override
   String toString() {
-    return 'CardInitializeResponse(authorizationUrl: $authorizationUrl, accessCode: $accessCode, reference: $reference)';
+    return 'CreateSaleRequest(customerId: $customerId, pumpAttendantId: $pumpAttendantId, stockId: $stockId, companyId: $companyId, amount: $amount, paymentMethod: $paymentMethod, accountNumber: $accountNumber, accountName: $accountName)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$CardInitializeResponseCopyWith<$Res>
-    implements $CardInitializeResponseCopyWith<$Res> {
-  factory _$CardInitializeResponseCopyWith(_CardInitializeResponse value,
-          $Res Function(_CardInitializeResponse) _then) =
-      __$CardInitializeResponseCopyWithImpl;
+abstract mixin class _$CreateSaleRequestCopyWith<$Res>
+    implements $CreateSaleRequestCopyWith<$Res> {
+  factory _$CreateSaleRequestCopyWith(
+          _CreateSaleRequest value, $Res Function(_CreateSaleRequest) _then) =
+      __$CreateSaleRequestCopyWithImpl;
   @override
   @useResult
-  $Res call({String authorizationUrl, String accessCode, String reference});
+  $Res call(
+      {String customerId,
+      String pumpAttendantId,
+      String stockId,
+      String companyId,
+      double amount,
+      String? paymentMethod,
+      String? accountNumber,
+      String? accountName});
 }
 
 /// @nodoc
-class __$CardInitializeResponseCopyWithImpl<$Res>
-    implements _$CardInitializeResponseCopyWith<$Res> {
-  __$CardInitializeResponseCopyWithImpl(this._self, this._then);
+class __$CreateSaleRequestCopyWithImpl<$Res>
+    implements _$CreateSaleRequestCopyWith<$Res> {
+  __$CreateSaleRequestCopyWithImpl(this._self, this._then);
 
-  final _CardInitializeResponse _self;
-  final $Res Function(_CardInitializeResponse) _then;
+  final _CreateSaleRequest _self;
+  final $Res Function(_CreateSaleRequest) _then;
 
-  /// Create a copy of CardInitializeResponse
+  /// Create a copy of CreateSaleRequest
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? authorizationUrl = null,
-    Object? accessCode = null,
-    Object? reference = null,
+    Object? customerId = null,
+    Object? pumpAttendantId = null,
+    Object? stockId = null,
+    Object? companyId = null,
+    Object? amount = null,
+    Object? paymentMethod = freezed,
+    Object? accountNumber = freezed,
+    Object? accountName = freezed,
   }) {
-    return _then(_CardInitializeResponse(
-      authorizationUrl: null == authorizationUrl
-          ? _self.authorizationUrl
-          : authorizationUrl // ignore: cast_nullable_to_non_nullable
+    return _then(_CreateSaleRequest(
+      customerId: null == customerId
+          ? _self.customerId
+          : customerId // ignore: cast_nullable_to_non_nullable
               as String,
-      accessCode: null == accessCode
-          ? _self.accessCode
-          : accessCode // ignore: cast_nullable_to_non_nullable
+      pumpAttendantId: null == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
               as String,
-      reference: null == reference
-          ? _self.reference
-          : reference // ignore: cast_nullable_to_non_nullable
+      stockId: null == stockId
+          ? _self.stockId
+          : stockId // ignore: cast_nullable_to_non_nullable
               as String,
+      companyId: null == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
+              as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as double,
+      paymentMethod: freezed == paymentMethod
+          ? _self.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountNumber: freezed == accountNumber
+          ? _self.accountNumber
+          : accountNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
 /// @nodoc
-mixin _$MomoChargeRequest {
-  String get phone;
-  String get provider;
+mixin _$PendingSaleDraft {
+  String get stockId;
+  String get companyId;
+  double get amount;
+  String? get paymentMethod;
+  String? get accountNumber;
+  String? get accountName;
 
-  /// Create a copy of MomoChargeRequest
+  /// Create a copy of PendingSaleDraft
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $MomoChargeRequestCopyWith<MomoChargeRequest> get copyWith =>
-      _$MomoChargeRequestCopyWithImpl<MomoChargeRequest>(
-          this as MomoChargeRequest, _$identity);
-
-  /// Serializes this MomoChargeRequest to a JSON map.
-  Map<String, dynamic> toJson();
+  $PendingSaleDraftCopyWith<PendingSaleDraft> get copyWith =>
+      _$PendingSaleDraftCopyWithImpl<PendingSaleDraft>(
+          this as PendingSaleDraft, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is MomoChargeRequest &&
-            (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.provider, provider) ||
-                other.provider == provider));
+            other is PendingSaleDraft &&
+            (identical(other.stockId, stockId) || other.stockId == stockId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.paymentMethod, paymentMethod) ||
+                other.paymentMethod == paymentMethod) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, phone, provider);
+  int get hashCode => Object.hash(runtimeType, stockId, companyId, amount,
+      paymentMethod, accountNumber, accountName);
 
   @override
   String toString() {
-    return 'MomoChargeRequest(phone: $phone, provider: $provider)';
+    return 'PendingSaleDraft(stockId: $stockId, companyId: $companyId, amount: $amount, paymentMethod: $paymentMethod, accountNumber: $accountNumber, accountName: $accountName)';
   }
 }
 
 /// @nodoc
-abstract mixin class $MomoChargeRequestCopyWith<$Res> {
-  factory $MomoChargeRequestCopyWith(
-          MomoChargeRequest value, $Res Function(MomoChargeRequest) _then) =
-      _$MomoChargeRequestCopyWithImpl;
+abstract mixin class $PendingSaleDraftCopyWith<$Res> {
+  factory $PendingSaleDraftCopyWith(
+          PendingSaleDraft value, $Res Function(PendingSaleDraft) _then) =
+      _$PendingSaleDraftCopyWithImpl;
   @useResult
-  $Res call({String phone, String provider});
+  $Res call(
+      {String stockId,
+      String companyId,
+      double amount,
+      String? paymentMethod,
+      String? accountNumber,
+      String? accountName});
 }
 
 /// @nodoc
-class _$MomoChargeRequestCopyWithImpl<$Res>
-    implements $MomoChargeRequestCopyWith<$Res> {
-  _$MomoChargeRequestCopyWithImpl(this._self, this._then);
+class _$PendingSaleDraftCopyWithImpl<$Res>
+    implements $PendingSaleDraftCopyWith<$Res> {
+  _$PendingSaleDraftCopyWithImpl(this._self, this._then);
 
-  final MomoChargeRequest _self;
-  final $Res Function(MomoChargeRequest) _then;
+  final PendingSaleDraft _self;
+  final $Res Function(PendingSaleDraft) _then;
 
-  /// Create a copy of MomoChargeRequest
+  /// Create a copy of PendingSaleDraft
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? phone = null,
-    Object? provider = null,
+    Object? stockId = null,
+    Object? companyId = null,
+    Object? amount = null,
+    Object? paymentMethod = freezed,
+    Object? accountNumber = freezed,
+    Object? accountName = freezed,
   }) {
     return _then(_self.copyWith(
-      phone: null == phone
-          ? _self.phone
-          : phone // ignore: cast_nullable_to_non_nullable
+      stockId: null == stockId
+          ? _self.stockId
+          : stockId // ignore: cast_nullable_to_non_nullable
               as String,
-      provider: null == provider
-          ? _self.provider
-          : provider // ignore: cast_nullable_to_non_nullable
+      companyId: null == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
               as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as double,
+      paymentMethod: freezed == paymentMethod
+          ? _self.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountNumber: freezed == accountNumber
+          ? _self.accountNumber
+          : accountNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
-/// Adds pattern-matching-related methods to [MomoChargeRequest].
-extension MomoChargeRequestPatterns on MomoChargeRequest {
+/// Adds pattern-matching-related methods to [PendingSaleDraft].
+extension PendingSaleDraftPatterns on PendingSaleDraft {
   /// A variant of `map` that fallback to returning `orElse`.
   ///
   /// It is equivalent to doing:
@@ -2867,12 +2007,12 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>(
-    TResult Function(_MomoChargeRequest value)? $default, {
+    TResult Function(_PendingSaleDraft value)? $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _MomoChargeRequest() when $default != null:
+      case _PendingSaleDraft() when $default != null:
         return $default(_that);
       case _:
         return orElse();
@@ -2894,11 +2034,11 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 
   @optionalTypeArgs
   TResult map<TResult extends Object?>(
-    TResult Function(_MomoChargeRequest value) $default,
+    TResult Function(_PendingSaleDraft value) $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _MomoChargeRequest():
+      case _PendingSaleDraft():
         return $default(_that);
       case _:
         throw StateError('Unexpected subclass');
@@ -2919,11 +2059,11 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_MomoChargeRequest value)? $default,
+    TResult? Function(_PendingSaleDraft value)? $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _MomoChargeRequest() when $default != null:
+      case _PendingSaleDraft() when $default != null:
         return $default(_that);
       case _:
         return null;
@@ -2944,13 +2084,16 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String phone, String provider)? $default, {
+    TResult Function(String stockId, String companyId, double amount,
+            String? paymentMethod, String? accountNumber, String? accountName)?
+        $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _MomoChargeRequest() when $default != null:
-        return $default(_that.phone, _that.provider);
+      case _PendingSaleDraft() when $default != null:
+        return $default(_that.stockId, _that.companyId, _that.amount,
+            _that.paymentMethod, _that.accountNumber, _that.accountName);
       case _:
         return orElse();
     }
@@ -2971,12 +2114,15 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(String phone, String provider) $default,
+    TResult Function(String stockId, String companyId, double amount,
+            String? paymentMethod, String? accountNumber, String? accountName)
+        $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _MomoChargeRequest():
-        return $default(_that.phone, _that.provider);
+      case _PendingSaleDraft():
+        return $default(_that.stockId, _that.companyId, _that.amount,
+            _that.paymentMethod, _that.accountNumber, _that.accountName);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -2996,12 +2142,15 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String phone, String provider)? $default,
+    TResult? Function(String stockId, String companyId, double amount,
+            String? paymentMethod, String? accountNumber, String? accountName)?
+        $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _MomoChargeRequest() when $default != null:
-        return $default(_that.phone, _that.provider);
+      case _PendingSaleDraft() when $default != null:
+        return $default(_that.stockId, _that.companyId, _that.amount,
+            _that.paymentMethod, _that.accountNumber, _that.accountName);
       case _:
         return null;
     }
@@ -3009,88 +2158,126 @@ extension MomoChargeRequestPatterns on MomoChargeRequest {
 }
 
 /// @nodoc
-@JsonSerializable()
-class _MomoChargeRequest implements MomoChargeRequest {
-  const _MomoChargeRequest({required this.phone, required this.provider});
-  factory _MomoChargeRequest.fromJson(Map<String, dynamic> json) =>
-      _$MomoChargeRequestFromJson(json);
+
+class _PendingSaleDraft implements PendingSaleDraft {
+  const _PendingSaleDraft(
+      {required this.stockId,
+      required this.companyId,
+      required this.amount,
+      this.paymentMethod,
+      this.accountNumber,
+      this.accountName});
 
   @override
-  final String phone;
+  final String stockId;
   @override
-  final String provider;
+  final String companyId;
+  @override
+  final double amount;
+  @override
+  final String? paymentMethod;
+  @override
+  final String? accountNumber;
+  @override
+  final String? accountName;
 
-  /// Create a copy of MomoChargeRequest
+  /// Create a copy of PendingSaleDraft
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$MomoChargeRequestCopyWith<_MomoChargeRequest> get copyWith =>
-      __$MomoChargeRequestCopyWithImpl<_MomoChargeRequest>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$MomoChargeRequestToJson(
-      this,
-    );
-  }
+  _$PendingSaleDraftCopyWith<_PendingSaleDraft> get copyWith =>
+      __$PendingSaleDraftCopyWithImpl<_PendingSaleDraft>(this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _MomoChargeRequest &&
-            (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.provider, provider) ||
-                other.provider == provider));
+            other is _PendingSaleDraft &&
+            (identical(other.stockId, stockId) || other.stockId == stockId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.paymentMethod, paymentMethod) ||
+                other.paymentMethod == paymentMethod) &&
+            (identical(other.accountNumber, accountNumber) ||
+                other.accountNumber == accountNumber) &&
+            (identical(other.accountName, accountName) ||
+                other.accountName == accountName));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, phone, provider);
+  int get hashCode => Object.hash(runtimeType, stockId, companyId, amount,
+      paymentMethod, accountNumber, accountName);
 
   @override
   String toString() {
-    return 'MomoChargeRequest(phone: $phone, provider: $provider)';
+    return 'PendingSaleDraft(stockId: $stockId, companyId: $companyId, amount: $amount, paymentMethod: $paymentMethod, accountNumber: $accountNumber, accountName: $accountName)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$MomoChargeRequestCopyWith<$Res>
-    implements $MomoChargeRequestCopyWith<$Res> {
-  factory _$MomoChargeRequestCopyWith(
-          _MomoChargeRequest value, $Res Function(_MomoChargeRequest) _then) =
-      __$MomoChargeRequestCopyWithImpl;
+abstract mixin class _$PendingSaleDraftCopyWith<$Res>
+    implements $PendingSaleDraftCopyWith<$Res> {
+  factory _$PendingSaleDraftCopyWith(
+          _PendingSaleDraft value, $Res Function(_PendingSaleDraft) _then) =
+      __$PendingSaleDraftCopyWithImpl;
   @override
   @useResult
-  $Res call({String phone, String provider});
+  $Res call(
+      {String stockId,
+      String companyId,
+      double amount,
+      String? paymentMethod,
+      String? accountNumber,
+      String? accountName});
 }
 
 /// @nodoc
-class __$MomoChargeRequestCopyWithImpl<$Res>
-    implements _$MomoChargeRequestCopyWith<$Res> {
-  __$MomoChargeRequestCopyWithImpl(this._self, this._then);
+class __$PendingSaleDraftCopyWithImpl<$Res>
+    implements _$PendingSaleDraftCopyWith<$Res> {
+  __$PendingSaleDraftCopyWithImpl(this._self, this._then);
 
-  final _MomoChargeRequest _self;
-  final $Res Function(_MomoChargeRequest) _then;
+  final _PendingSaleDraft _self;
+  final $Res Function(_PendingSaleDraft) _then;
 
-  /// Create a copy of MomoChargeRequest
+  /// Create a copy of PendingSaleDraft
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? phone = null,
-    Object? provider = null,
+    Object? stockId = null,
+    Object? companyId = null,
+    Object? amount = null,
+    Object? paymentMethod = freezed,
+    Object? accountNumber = freezed,
+    Object? accountName = freezed,
   }) {
-    return _then(_MomoChargeRequest(
-      phone: null == phone
-          ? _self.phone
-          : phone // ignore: cast_nullable_to_non_nullable
+    return _then(_PendingSaleDraft(
+      stockId: null == stockId
+          ? _self.stockId
+          : stockId // ignore: cast_nullable_to_non_nullable
               as String,
-      provider: null == provider
-          ? _self.provider
-          : provider // ignore: cast_nullable_to_non_nullable
+      companyId: null == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
               as String,
+      amount: null == amount
+          ? _self.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as double,
+      paymentMethod: freezed == paymentMethod
+          ? _self.paymentMethod
+          : paymentMethod // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountNumber: freezed == accountNumber
+          ? _self.accountNumber
+          : accountNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      accountName: freezed == accountName
+          ? _self.accountName
+          : accountName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }

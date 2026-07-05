@@ -11,8 +11,6 @@ export '../config/app_config.dart';
 export '../features/auth/presentation/screens/login_screen.dart';
 export '../features/onboarding/presentation/screens/onboarding_page.dart'
     show SetupPage;
-export '../features/sale/presentation/screens/card_checkout_screen.dart';
-export '../features/sale/presentation/screens/card_verify_screen.dart';
 export '../features/sale/presentation/screens/momo_otp_screen.dart';
 export '../features/sale/presentation/screens/momo_pending_approval_screen.dart';
 export '../features/sale/presentation/screens/payment_method_screen.dart';

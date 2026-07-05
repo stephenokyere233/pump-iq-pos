@@ -1,7 +1,6 @@
 import 'package:pump_iq/src/imports/core_imports.dart';
 import 'package:pump_iq/src/imports/packages_imports.dart';
 
-import '../../data/models/sale_model.dart';
 import '../providers/sale_bloc.dart';
 
 class MomoPendingApprovalScreen extends StatelessWidget {
@@ -14,13 +13,7 @@ class MomoPendingApprovalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLoading = context.select((SaleBloc b) => b.state.isPaymentLoading);
-    final momoChargeStatus =
-        context.select((SaleBloc b) => b.state.momoChargeStatus);
     final colorScheme = context.colors;
-
-    final subtitle = momoChargeStatus == MomoChargeStatus.sendOtp
-        ? 'OTP submitted. Waiting for payment confirmation.'
-        : 'Customer is approving payment on their phone.';
 
     return Scaffold(
       appBar: const AppTopBar(),
@@ -61,7 +54,7 @@ class MomoPendingApprovalScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
                 child: Text(
-                  subtitle,
+                  'Customer is approving payment on their phone.',
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,

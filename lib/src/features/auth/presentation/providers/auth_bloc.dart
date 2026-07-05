@@ -7,7 +7,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required AuthRepository repository})
       : _repository = repository,
-        super(const AuthState.initial()) {
+        super(AuthState.initial(
+          lastStationId: repository.getLastLoginStationId(),
+        )) {
     on<LoginRequested>(_onLoginRequested);
   }
 
@@ -17,7 +19,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(state.copyWith(isLoading: true));
 
-    final result = await _repository.login(pin: event.pin);
+    final result = await _repository.login(
+      stationId: event.stationId,
+      pin: event.pin,
+    );
 
     result.fold(
       (failure) {
@@ -50,18 +55,34 @@ abstract class AuthEvent extends Equatable {
 
 class LoginRequested extends AuthEvent {
   final BuildContext context;
+  final String stationId;
   final String pin;
-  const LoginRequested({required this.context, required this.pin});
+  const LoginRequested({
+    required this.context,
+    required this.stationId,
+    required this.pin,
+  });
+
+  @override
+  List<Object> get props => [stationId, pin];
 }
 
 class AuthState extends Equatable {
   final bool isLoading;
-  const AuthState({required this.isLoading});
-  const AuthState.initial() : isLoading = false;
-  AuthState copyWith({bool? isLoading}) {
-    return AuthState(isLoading: isLoading ?? this.isLoading);
+  final String? lastStationId;
+
+  const AuthState({required this.isLoading, this.lastStationId});
+
+  factory AuthState.initial({String? lastStationId}) =>
+      AuthState(isLoading: false, lastStationId: lastStationId);
+
+  AuthState copyWith({bool? isLoading, String? lastStationId}) {
+    return AuthState(
+      isLoading: isLoading ?? this.isLoading,
+      lastStationId: lastStationId ?? this.lastStationId,
+    );
   }
 
   @override
-  List<Object?> get props => [isLoading];
+  List<Object?> get props => [isLoading, lastStationId];
 }

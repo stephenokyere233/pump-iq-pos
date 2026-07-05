@@ -1,127 +1,120 @@
+import 'package:fpdart/fpdart.dart';
+
+import '../../../../services/auth_service.dart';
+import '../../../../utils/failure.dart';
 import '../../../../utils/typedefs.dart';
-import '../models/customer_model.dart';
+import '../../../customer/data/models/customer_model.dart';
+import '../../../customer/data/repositories/customer_repository.dart';
+import '../../../inventory/data/repositories/inventory_repository.dart';
 import '../models/fuel_price_model.dart';
 import '../models/sale_model.dart';
+import '../services/payment_service.dart';
 import '../services/sale_service.dart';
 
 class SaleRepository {
-  final SaleService _service = SaleService.instance;
+  SaleRepository({
+    CustomerRepository? customerRepository,
+    InventoryRepository? inventoryRepository,
+  })  : _customerRepository = customerRepository ?? CustomerRepository(),
+        _inventoryRepository = inventoryRepository ?? InventoryRepository();
 
-  FutureEither<Customer> getCustomerByPlate(String plateNumber) async {
-    final result = await _service.getCustomerByPlate(plateNumber);
-    return result.map((data) => Customer.fromJson(data));
+  final SaleService _saleService = SaleService.instance;
+  final PaymentService _paymentService = PaymentService.instance;
+  final CustomerRepository _customerRepository;
+  final InventoryRepository _inventoryRepository;
+
+  FutureEither<Customer?> getCustomerByPlate(String plateNumber) {
+    return _customerRepository.findByPlate(
+      plateNumber: plateNumber,
+      stationId: AuthService.instance.getStationId(),
+      companyId: AuthService.instance.getCompanyId(),
+    );
   }
 
-  FutureEither<List<FuelPrice>> getActiveFuelPrices() async {
-    final result = await _service.getActiveFuelPrices();
-    return result.map(
-      (list) => list
-          .map((item) => FuelPrice.fromJson(item as Map<String, dynamic>))
-          .toList(),
+  FutureEither<List<FuelPrice>> getActiveFuelPrices() {
+    return _inventoryRepository.getActiveFuelPrices(
+      companyId: AuthService.instance.getCompanyId(),
+      stationId: AuthService.instance.getStationId(),
     );
   }
 
   FutureEither<Sale> createSale(CreateSaleRequest request) async {
-    final result = await _service.createSale(request);
-    return result.map((data) => Sale.fromJson(data));
+    final result = await _saleService.createSale(request);
+    return result.map((sale) => sale);
   }
 
-  FutureEither<void> payCash(String saleId) async {
-    final result = await _service.payCash(saleId);
-    return result.map((_) {});
+  FutureEither<Sale> getSale(String saleId) async {
+    final idError = _saleIdFailure(saleId);
+    if (idError != null) return left(idError);
+
+    final result = await _saleService.getSale(saleId.trim());
+    return result.map((sale) => sale);
   }
 
-  FutureEither<CardInitializeResponse> payCardInitialize(String saleId) async {
-    final result = await _service.payCardInitialize(saleId);
-    return result.map((data) => CardInitializeResponse.fromJson(data));
+  FutureEither<Sale> verifySaleOtp(String saleId, {required String otp}) async {
+    final idError = _saleIdFailure(saleId);
+    if (idError != null) return left(idError);
+
+    final result = await _saleService.verifyOtp(saleId.trim(), otp: otp);
+    return result.map((sale) => sale);
   }
 
-  FutureEither<void> payCardVerify(String saleId, String reference) async {
-    final result = await _service.payCardVerify(saleId, reference);
-    return result.map((_) {});
+  FutureEither<Sale> completeCollection(String saleId) async {
+    final idError = _saleIdFailure(saleId);
+    if (idError != null) return left(idError);
+
+    final result = await _saleService.completeCollection(saleId.trim());
+    return result.map((sale) => sale);
+  }
+
+  FutureEither<Sale> pollPaymentStatus(String saleId) async {
+    final idError = _saleIdFailure(saleId);
+    if (idError != null) return left(idError);
+
+    final result = await _saleService.pollPaymentStatus(saleId.trim());
+    return result.map((sale) => sale);
   }
 
   FutureEither<ValidateAccountResponse> validateAccount(
     ValidateAccountRequest request,
   ) async {
-    final result = await _service.validateAccount(request);
-    return result.map((data) => ValidateAccountResponse.fromJson(data));
-  }
-
-  FutureEither<MomoChargeResponse> payMomoCharge(
-    String saleId,
-    MomoChargeRequest request,
-  ) async {
-    final result = await _service.payMomoCharge(saleId, request);
-    return result.map((data) => MomoChargeResponse.fromJson(data));
-  }
-
-  FutureEither<void> payMomoSubmitOtp(
-    String saleId, {
-    required String otp,
-    required String reference,
-  }) async {
-    final result = await _service.payMomoSubmitOtp(
-      saleId,
-      otp: otp,
-      reference: reference,
-    );
-    return result.map((_) {});
-  }
-
-  FutureEither<MomoCheckPendingResponse> payMomoCheckPending(
-    String saleId, {
-    required String reference,
-  }) async {
-    final result = await _service.payMomoCheckPending(
-      saleId,
-      reference: reference,
-    );
-    return result.map((data) => MomoCheckPendingResponse.fromJson(data));
+    final result = await _paymentService.validateMomoAccount(request);
+    return result.map((data) => data);
   }
 
   FutureEither<Customer> createCustomer({
     required String phone,
+    required String plateNumber,
     String? name,
     String? email,
-    String? country,
-    String? plateNumber,
   }) async {
-    final result = await _service.createCustomer(
-      phone: phone,
-      name: name,
-      email: email,
-      country: country,
-      plateNumber: plateNumber,
+    final companyId = AuthService.instance.getCompanyId();
+    final stationId = AuthService.instance.getStationId();
+    if (companyId == null || stationId == null) {
+      return left(
+        const ServerFailure('Station or company context is missing'),
+      );
+    }
+
+    return _customerRepository.create(
+      CreateCustomerRequest(
+        company: companyId,
+        phoneNumber: phone,
+        plateNumber: plateNumber,
+        station: stationId,
+        name: name,
+        email: email,
+      ),
     );
-    return result.map((data) => Customer.fromJson(data));
   }
 
-  FutureEither<void> sendCustomerOtp({
-    required String phone,
-    String? country,
-    String? name,
-    String? plateNumber,
-  }) async {
-    final result = await _service.sendCustomerOtp(
-      phone: phone,
-      country: country,
-      name: name,
-      plateNumber: plateNumber,
-    );
-    return result.map((_) {});
-  }
-
-  FutureEither<void> verifyCustomerOtp({
-    required String phone,
-    required String otp,
-    String? country,
-  }) async {
-    final result = await _service.verifyCustomerOtp(
-      phone: phone,
-      otp: otp,
-      country: country,
-    );
-    return result.map((_) {});
+  Failure? _saleIdFailure(String saleId) {
+    final trimmed = saleId.trim();
+    if (trimmed.isEmpty || trimmed == 'null') {
+      return const ServerFailure(
+        'Sale id is missing from the server response',
+      );
+    }
+    return null;
   }
 }

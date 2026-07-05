@@ -2,8 +2,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pump_iq/src/features/auth/presentation/screens/login_screen.dart';
 import 'package:pump_iq/src/features/onboarding/presentation/screens/onboarding_page.dart'
     show SetupPage;
-import 'package:pump_iq/src/features/sale/presentation/screens/card_checkout_screen.dart';
-import 'package:pump_iq/src/features/sale/presentation/screens/card_verify_screen.dart';
 import 'package:pump_iq/src/features/sale/presentation/screens/momo_otp_screen.dart';
 import 'package:pump_iq/src/features/sale/presentation/screens/momo_pending_approval_screen.dart';
 import 'package:pump_iq/src/features/sale/presentation/screens/payment_method_screen.dart';
@@ -45,16 +43,6 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.momoPendingApproval,
       name: 'momoPendingApproval',
       builder: (context, state) => const MomoPendingApprovalScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.cardCheckout,
-      name: 'cardCheckout',
-      builder: (context, state) => const CardCheckoutScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.cardVerify,
-      name: 'cardVerify',
-      builder: (context, state) => const CardVerifyScreen(),
     ),
     GoRoute(
       path: AppRoutes.transactionComplete,

@@ -26,6 +26,10 @@ class SessionLogoutRequested extends SessionEvent {
   const SessionLogoutRequested();
 }
 
+class SessionDeviceRegistered extends SessionEvent {
+  const SessionDeviceRegistered();
+}
+
 /// Session states
 enum SessionStatus { unknown, authenticated, unauthenticated }
 
@@ -74,6 +78,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     on<SessionCheckRequested>(_onCheckRequested);
     on<SessionUserChanged>(_onUserChanged);
     on<SessionLogoutRequested>(_onLogoutRequested);
+    on<SessionDeviceRegistered>(_onDeviceRegistered);
 
     add(const SessionCheckRequested());
   }
@@ -141,6 +146,21 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   ) async {
     await _repository.logout();
     emit(const SessionState.unauthenticated());
+  }
+
+  void _onDeviceRegistered(
+    SessionDeviceRegistered event,
+    Emitter<SessionState> emit,
+  ) {
+    final user = state.user;
+    if (user == null || state.status != SessionStatus.authenticated) return;
+
+    emit(
+      SessionState.authenticated(
+        user,
+        deviceRegistrationStatus: DeviceRegistrationStatus.registered,
+      ),
+    );
   }
 
   @override

@@ -1,7 +1,8 @@
 import 'package:pump_iq/src/imports/core_imports.dart';
 import 'package:pump_iq/src/imports/packages_imports.dart';
 
-import '../../data/models/customer_model.dart';
+import '../../../auth/data/repositories/auth_repository.dart';
+import '../../../customer/data/models/customer_model.dart';
 import '../../data/models/fuel_price_model.dart';
 import '../../data/models/sale_model.dart';
 import '../../data/repositories/sale_repository.dart';
@@ -29,39 +30,20 @@ class LoadActiveFuelPrices extends SaleEvent {
   const LoadActiveFuelPrices();
 }
 
-class CreateSaleRequested extends SaleEvent {
-  final BuildContext context;
-  final CreateSaleRequest request;
-  const CreateSaleRequested({required this.context, required this.request});
+class PrepareSaleDraft extends SaleEvent {
+  final PendingSaleDraft draft;
+  const PrepareSaleDraft({required this.draft});
 }
 
 class CreateCustomerRequested extends SaleEvent {
   final BuildContext context;
   final String phone;
   final String plateNumber;
-  final CreateSaleRequest pendingSaleRequest;
   const CreateCustomerRequested({
     required this.context,
     required this.phone,
     required this.plateNumber,
-    required this.pendingSaleRequest,
   });
-}
-
-class SendCustomerOtp extends SaleEvent {
-  final BuildContext context;
-  const SendCustomerOtp({required this.context});
-}
-
-class VerifyCustomerOtp extends SaleEvent {
-  final BuildContext context;
-  final String otp;
-  const VerifyCustomerOtp({required this.context, required this.otp});
-}
-
-class SkipOtpVerification extends SaleEvent {
-  final BuildContext context;
-  const SkipOtpVerification({required this.context});
 }
 
 class PayWithCash extends SaleEvent {
@@ -86,7 +68,7 @@ class ValidateMomoAccount extends SaleEvent {
 class PayWithMomo extends SaleEvent {
   final BuildContext context;
   final String phone;
-  final String provider;
+  final MomoProvider provider;
   const PayWithMomo({
     required this.context,
     required this.phone,
@@ -103,16 +85,6 @@ class SubmitMomoOtp extends SaleEvent {
 class VerifyMomoPending extends SaleEvent {
   final BuildContext context;
   const VerifyMomoPending({required this.context});
-}
-
-class PayWithCard extends SaleEvent {
-  final BuildContext context;
-  const PayWithCard({required this.context});
-}
-
-class VerifyCardPayment extends SaleEvent {
-  final BuildContext context;
-  const VerifyCardPayment({required this.context});
 }
 
 class ResendMomoCharge extends SaleEvent {
@@ -137,23 +109,15 @@ class SaleState extends Equatable {
   final Customer? customer;
   final List<FuelPrice> fuelPrices;
   final Sale? sale;
+  final PendingSaleDraft? pendingDraft;
   final PaymentMethod? selectedPaymentMethod;
   final bool isTransactionComplete;
-  final String? paymentReference;
   final bool isNewCustomer;
-  final bool otpPending;
-  final bool otpVerified;
-  final CreateSaleRequest? pendingSaleRequest;
   final MomoProvider? selectedMomoProvider;
   final String? validatedAccountName;
   final bool isAccountValidated;
   final bool isValidatingAccount;
-  final MomoChargeStatus? momoChargeStatus;
-  final String? momoReference;
   final String? momoPhone;
-  final String? momoProviderCode;
-  final String? cardAuthorizationUrl;
-  final String? cardReference;
 
   const SaleState({
     this.isLoading = false,
@@ -162,49 +126,18 @@ class SaleState extends Equatable {
     this.customer,
     this.fuelPrices = const [],
     this.sale,
+    this.pendingDraft,
     this.selectedPaymentMethod,
     this.isTransactionComplete = false,
-    this.paymentReference,
     this.isNewCustomer = false,
-    this.otpPending = false,
-    this.otpVerified = false,
-    this.pendingSaleRequest,
     this.selectedMomoProvider,
     this.validatedAccountName,
     this.isAccountValidated = false,
     this.isValidatingAccount = false,
-    this.momoChargeStatus,
-    this.momoReference,
     this.momoPhone,
-    this.momoProviderCode,
-    this.cardAuthorizationUrl,
-    this.cardReference,
   });
 
-  const SaleState.initial()
-      : isLoading = false,
-        isPaymentLoading = false,
-        isFuelPricesLoading = false,
-        customer = null,
-        fuelPrices = const [],
-        sale = null,
-        selectedPaymentMethod = null,
-        isTransactionComplete = false,
-        paymentReference = null,
-        isNewCustomer = false,
-        otpPending = false,
-        otpVerified = false,
-        pendingSaleRequest = null,
-        selectedMomoProvider = null,
-        validatedAccountName = null,
-        isAccountValidated = false,
-        isValidatingAccount = false,
-        momoChargeStatus = null,
-        momoReference = null,
-        momoPhone = null,
-        momoProviderCode = null,
-        cardAuthorizationUrl = null,
-        cardReference = null;
+  const SaleState.initial() : this();
 
   SaleState copyWith({
     bool? isLoading,
@@ -213,26 +146,18 @@ class SaleState extends Equatable {
     Customer? customer,
     List<FuelPrice>? fuelPrices,
     Sale? sale,
+    PendingSaleDraft? pendingDraft,
     PaymentMethod? selectedPaymentMethod,
     bool? isTransactionComplete,
-    String? paymentReference,
     bool? isNewCustomer,
-    bool? otpPending,
-    bool? otpVerified,
-    CreateSaleRequest? pendingSaleRequest,
     MomoProvider? selectedMomoProvider,
     String? validatedAccountName,
     bool? isAccountValidated,
     bool? isValidatingAccount,
-    MomoChargeStatus? momoChargeStatus,
-    String? momoReference,
     String? momoPhone,
-    String? momoProviderCode,
-    String? cardAuthorizationUrl,
-    String? cardReference,
     bool clearCustomer = false,
     bool clearSale = false,
-    bool clearPendingSaleRequest = false,
+    bool clearPendingDraft = false,
     bool clearMomoValidation = false,
   }) {
     return SaleState(
@@ -242,17 +167,13 @@ class SaleState extends Equatable {
       customer: clearCustomer ? null : (customer ?? this.customer),
       fuelPrices: fuelPrices ?? this.fuelPrices,
       sale: clearSale ? null : (sale ?? this.sale),
+      pendingDraft:
+          clearPendingDraft ? null : (pendingDraft ?? this.pendingDraft),
       selectedPaymentMethod:
           selectedPaymentMethod ?? this.selectedPaymentMethod,
       isTransactionComplete:
           isTransactionComplete ?? this.isTransactionComplete,
-      paymentReference: paymentReference ?? this.paymentReference,
       isNewCustomer: isNewCustomer ?? this.isNewCustomer,
-      otpPending: otpPending ?? this.otpPending,
-      otpVerified: otpVerified ?? this.otpVerified,
-      pendingSaleRequest: clearPendingSaleRequest
-          ? null
-          : (pendingSaleRequest ?? this.pendingSaleRequest),
       selectedMomoProvider: clearMomoValidation
           ? null
           : (selectedMomoProvider ?? this.selectedMomoProvider),
@@ -263,12 +184,7 @@ class SaleState extends Equatable {
           ? false
           : (isAccountValidated ?? this.isAccountValidated),
       isValidatingAccount: isValidatingAccount ?? this.isValidatingAccount,
-      momoChargeStatus: momoChargeStatus ?? this.momoChargeStatus,
-      momoReference: momoReference ?? this.momoReference,
       momoPhone: momoPhone ?? this.momoPhone,
-      momoProviderCode: momoProviderCode ?? this.momoProviderCode,
-      cardAuthorizationUrl: cardAuthorizationUrl ?? this.cardAuthorizationUrl,
-      cardReference: cardReference ?? this.cardReference,
     );
   }
 
@@ -280,23 +196,15 @@ class SaleState extends Equatable {
         customer,
         fuelPrices,
         sale,
+        pendingDraft,
         selectedPaymentMethod,
         isTransactionComplete,
-        paymentReference,
         isNewCustomer,
-        otpPending,
-        otpVerified,
-        pendingSaleRequest,
         selectedMomoProvider,
         validatedAccountName,
         isAccountValidated,
         isValidatingAccount,
-        momoChargeStatus,
-        momoReference,
         momoPhone,
-        momoProviderCode,
-        cardAuthorizationUrl,
-        cardReference,
       ];
 }
 
@@ -304,26 +212,25 @@ class SaleState extends Equatable {
 
 class SaleBloc extends Bloc<SaleEvent, SaleState> {
   final SaleRepository _repository;
+  final AuthRepository _authRepository;
 
-  SaleBloc({required SaleRepository repository})
-      : _repository = repository,
+  SaleBloc({
+    required SaleRepository repository,
+    AuthRepository? authRepository,
+  })  : _repository = repository,
+        _authRepository = authRepository ?? AuthRepository(),
         super(const SaleState.initial()) {
     on<LookupCustomerByPlate>(_onLookupCustomer);
     on<ClearCustomerLookup>(_onClearCustomerLookup);
     on<LoadActiveFuelPrices>(_onLoadFuelPrices);
-    on<CreateSaleRequested>(_onCreateSale);
+    on<PrepareSaleDraft>(_onPrepareSaleDraft);
     on<CreateCustomerRequested>(_onCreateCustomer);
-    on<SendCustomerOtp>(_onSendOtp);
-    on<VerifyCustomerOtp>(_onVerifyOtp);
-    on<SkipOtpVerification>(_onSkipOtp);
     on<PayWithCash>(_onPayCash);
     on<ValidateMomoAccount>(_onValidateMomoAccount);
     on<PayWithMomo>(_onPayMomo);
     on<ResendMomoCharge>(_onResendMomoCharge);
     on<SubmitMomoOtp>(_onSubmitMomoOtp);
     on<VerifyMomoPending>(_onVerifyMomoPending);
-    on<PayWithCard>(_onPayCard);
-    on<VerifyCardPayment>(_onVerifyCardPayment);
     on<ClearMomoValidation>(_onClearMomoValidation);
     on<ResetSale>(_onReset);
   }
@@ -346,63 +253,43 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     ClearCustomerLookup event,
     Emitter<SaleState> emit,
   ) {
-    emit(state.copyWith(
-      clearCustomer: true,
-      isNewCustomer: false,
-      otpPending: false,
-      otpVerified: false,
-    ));
+    emit(state.copyWith(clearCustomer: true, isNewCustomer: false));
   }
 
   Future<void> _onLookupCustomer(
     LookupCustomerByPlate event,
     Emitter<SaleState> emit,
   ) async {
-    emit(state.copyWith(
-      isLoading: true,
-      isNewCustomer: false,
-      otpPending: false,
-      otpVerified: false,
-    ));
+    emit(state.copyWith(isLoading: true, isNewCustomer: false));
     final result = await _repository.getCustomerByPlate(event.plateNumber);
     result.fold(
       (failure) {
         if (_is404(failure.error)) {
-          AppLogger.info(
-            'Customer not found for plate "${event.plateNumber}" — new customer flow',
-          );
           emit(state.copyWith(
             isLoading: false,
             clearCustomer: true,
             isNewCustomer: true,
-            otpPending: false,
-            otpVerified: false,
           ));
         } else {
-          AppLogger.warning(
-            'Customer lookup failed for plate "${event.plateNumber}": ${failure.message}',
-          );
-          emit(state.copyWith(
-            isLoading: false,
-            clearCustomer: true,
-            otpPending: false,
-            otpVerified: false,
-          ));
+          emit(state.copyWith(isLoading: false, clearCustomer: true));
           if (event.context.mounted) {
             showToast(event.context, message: failure.message, status: 'error');
           }
         }
       },
       (customer) {
-        emit(state.copyWith(
-          isLoading: false,
-          customer: customer,
-          isNewCustomer: false,
-          otpPending: false,
-          otpVerified: false,
-        ));
-        if (!customer.isVerified && event.context.mounted) {
-          add(SendCustomerOtp(context: event.context));
+        if (customer == null) {
+          emit(state.copyWith(
+            isLoading: false,
+            clearCustomer: true,
+            isNewCustomer: true,
+          ));
+        } else {
+          emit(state.copyWith(
+            isLoading: false,
+            customer: customer,
+            isNewCustomer: false,
+          ));
         }
       },
     );
@@ -415,63 +302,26 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     emit(state.copyWith(isFuelPricesLoading: true));
     final result = await _repository.getActiveFuelPrices();
     result.fold(
-      (failure) {
-        emit(state.copyWith(isFuelPricesLoading: false));
-        AppLogger.warning(
-          'Failed to load active fuel prices: ${failure.message}',
-        );
-      },
+      (failure) => emit(state.copyWith(isFuelPricesLoading: false)),
       (prices) => emit(
-        state.copyWith(
-          fuelPrices: prices,
-          isFuelPricesLoading: false,
-        ),
+        state.copyWith(fuelPrices: prices, isFuelPricesLoading: false),
       ),
     );
   }
 
-  Future<void> _onCreateSale(
-    CreateSaleRequested event,
-    Emitter<SaleState> emit,
-  ) async {
-    emit(state.copyWith(isLoading: true));
-    final result = await _repository.createSale(event.request);
-    result.fold(
-      (failure) {
-        emit(state.copyWith(isLoading: false));
-        if (event.context.mounted) {
-          showToast(event.context, message: failure.message, status: 'error');
-        }
-      },
-      (sale) {
-        emit(state.copyWith(isLoading: false, sale: sale));
-      },
-    );
+  void _onPrepareSaleDraft(PrepareSaleDraft event, Emitter<SaleState> emit) {
+    emit(state.copyWith(pendingDraft: event.draft, clearSale: true));
   }
 
   Future<void> _onCreateCustomer(
     CreateCustomerRequested event,
     Emitter<SaleState> emit,
   ) async {
-    // Guard: if a customer is already set, skip creation and proceed to OTP.
-    if (state.customer != null) {
-      emit(state.copyWith(pendingSaleRequest: event.pendingSaleRequest));
-      if (event.context.mounted && !state.otpPending) {
-        add(SendCustomerOtp(context: event.context));
-      }
-      return;
-    }
-
-    emit(state.copyWith(
-      isLoading: true,
-      pendingSaleRequest: event.pendingSaleRequest,
-    ));
-
+    emit(state.copyWith(isLoading: true));
     final result = await _repository.createCustomer(
       phone: event.phone,
       plateNumber: event.plateNumber,
     );
-
     result.fold(
       (failure) {
         emit(state.copyWith(isLoading: false));
@@ -480,118 +330,57 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
         }
       },
       (customer) {
-        emit(state.copyWith(isLoading: false, customer: customer));
-        if (event.context.mounted) {
-          add(SendCustomerOtp(context: event.context));
-        }
-      },
-    );
-  }
-
-  Future<void> _onSendOtp(
-    SendCustomerOtp event,
-    Emitter<SaleState> emit,
-  ) async {
-    if (state.customer == null) return;
-    emit(state.copyWith(isLoading: true));
-
-    final result = await _repository.sendCustomerOtp(
-      phone: state.customer!.phone,
-      plateNumber: state.customer!.plateNumber,
-    );
-
-    result.fold(
-      (failure) {
-        emit(state.copyWith(isLoading: false));
-        if (event.context.mounted) {
-          showToast(event.context, message: failure.message, status: 'error');
-        }
-      },
-      (_) {
-        emit(state.copyWith(isLoading: false, otpPending: true));
-      },
-    );
-  }
-
-  Future<void> _onVerifyOtp(
-    VerifyCustomerOtp event,
-    Emitter<SaleState> emit,
-  ) async {
-    if (state.customer == null) return;
-    emit(state.copyWith(isLoading: true));
-
-    final result = await _repository.verifyCustomerOtp(
-      phone: state.customer!.phone,
-      otp: event.otp,
-    );
-
-    result.fold(
-      (failure) {
-        emit(state.copyWith(isLoading: false));
-        if (event.context.mounted) {
-          showToast(event.context, message: failure.message, status: 'error');
-        }
-      },
-      (_) {
         emit(state.copyWith(
           isLoading: false,
-          otpPending: false,
-          otpVerified: true,
+          customer: customer,
+          isNewCustomer: false,
         ));
-        if (state.sale == null && state.pendingSaleRequest != null) {
-          _createSaleFromPending(event.context, emit);
-        }
       },
     );
   }
 
-  Future<void> _onSkipOtp(
-    SkipOtpVerification event,
-    Emitter<SaleState> emit,
-  ) async {
-    if (state.sale == null && state.pendingSaleRequest != null) {
-      await _createSaleFromPending(event.context, emit);
+  CreateSaleRequest? _buildSaleRequest({
+    String? paymentMethod,
+    String? accountNumber,
+    String? accountName,
+  }) {
+    final draft = state.pendingDraft;
+    final customer = state.customer;
+    final pumpAttendantId = _authRepository.getPumpAttendantId();
+    final companyId =
+        draft?.companyId ?? customer?.companyId ?? _authRepository.getCompanyId();
+
+    if (draft == null ||
+        customer == null ||
+        pumpAttendantId == null ||
+        companyId == null) {
+      return null;
     }
-  }
 
-  Future<void> _createSaleFromPending(
-    BuildContext context,
-    Emitter<SaleState> emit,
-  ) async {
-    if (state.customer == null || state.pendingSaleRequest == null) return;
-
-    final request = CreateSaleRequest(
-      fuelPriceId: state.pendingSaleRequest!.fuelPriceId,
-      customerId: state.customer!.id,
-      pumpId: state.pendingSaleRequest!.pumpId,
-      amount: state.pendingSaleRequest!.amount,
-      usePointsDiscount: state.pendingSaleRequest!.usePointsDiscount,
-      discount: state.pendingSaleRequest!.discount,
-    );
-
-    emit(state.copyWith(isLoading: true));
-    final result = await _repository.createSale(request);
-    result.fold(
-      (failure) {
-        emit(state.copyWith(isLoading: false));
-        if (context.mounted) {
-          showToast(context, message: failure.message, status: 'error');
-        }
-      },
-      (sale) {
-        emit(state.copyWith(
-          isLoading: false,
-          sale: sale,
-          clearPendingSaleRequest: true,
-        ));
-      },
+    return CreateSaleRequest(
+      customerId: customer.id,
+      pumpAttendantId: pumpAttendantId,
+      stockId: draft.stockId,
+      companyId: companyId,
+      amount: draft.amount,
+      paymentMethod: paymentMethod,
+      accountNumber: accountNumber,
+      accountName: accountName,
     );
   }
 
   Future<void> _onPayCash(PayWithCash event, Emitter<SaleState> emit) async {
-    if (state.sale == null) return;
+    final request = _buildSaleRequest();
+    if (request == null) {
+      if (event.context.mounted) {
+        showToast(event.context,
+            message: 'Sale details are incomplete', status: 'error');
+      }
+      return;
+    }
+
     emit(state.copyWith(isPaymentLoading: true));
-    final result = await _repository.payCash(state.sale!.id);
+    final result = await _repository.createSale(request);
     result.fold(
       (failure) {
         emit(state.copyWith(isPaymentLoading: false));
@@ -599,11 +388,12 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
           showToast(event.context, message: failure.message, status: 'error');
         }
       },
-      (_) {
+      (sale) {
         emit(state.copyWith(
           isPaymentLoading: false,
-          isTransactionComplete: true,
+          sale: sale,
           selectedPaymentMethod: PaymentMethod.cash,
+          isTransactionComplete: sale.isCompleted,
         ));
         if (event.context.mounted) {
           event.context.push(AppRoutes.transactionComplete);
@@ -624,34 +414,25 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     ));
 
     final request = ValidateAccountRequest(
-      customerNumber: event.customerNumber,
-      bankCode: event.provider.bankCode,
+      phoneNumber: event.customerNumber,
+      channel: event.provider.channel,
     );
 
     final result = await _repository.validateAccount(request);
     result.fold(
       (failure) {
-        emit(state.copyWith(
-          isValidatingAccount: false,
-          isAccountValidated: false,
-        ));
+        emit(state.copyWith(isValidatingAccount: false));
         if (event.context.mounted) {
           showToast(event.context, message: failure.message, status: 'error');
         }
       },
       (response) {
-        final name = response.name?.trim();
+        final name = response.accountName?.trim();
         if (name == null || name.isEmpty) {
-          emit(state.copyWith(
-            isValidatingAccount: false,
-            isAccountValidated: false,
-          ));
+          emit(state.copyWith(isValidatingAccount: false));
           if (event.context.mounted) {
-            showToast(
-              event.context,
-              message: 'Could not verify account name',
-              status: 'error',
-            );
+            showToast(event.context,
+                message: 'Could not verify account name', status: 'error');
           }
           return;
         }
@@ -666,14 +447,23 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
   }
 
   Future<void> _onPayMomo(PayWithMomo event, Emitter<SaleState> emit) async {
-    if (state.sale == null) return;
     if (!state.isAccountValidated) {
       if (event.context.mounted) {
-        showToast(
-          event.context,
-          message: 'Please validate the MoMo account first',
-          status: 'error',
-        );
+        showToast(event.context,
+            message: 'Please validate the MoMo account first', status: 'error');
+      }
+      return;
+    }
+
+    final request = _buildSaleRequest(
+      paymentMethod: 'mobile_money',
+      accountNumber: event.phone,
+      accountName: state.validatedAccountName,
+    );
+    if (request == null) {
+      if (event.context.mounted) {
+        showToast(event.context,
+            message: 'Sale details are incomplete', status: 'error');
       }
       return;
     }
@@ -681,40 +471,75 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     emit(state.copyWith(
       isPaymentLoading: true,
       momoPhone: event.phone,
-      momoProviderCode: event.provider,
+      selectedMomoProvider: event.provider,
     ));
-    final request = MomoChargeRequest(
-      phone: event.phone,
-      provider: event.provider,
-    );
-    final result = await _repository.payMomoCharge(state.sale!.id, request);
-    result.fold(
-      (failure) {
+
+    final result = await _repository.createSale(request);
+    await result.fold(
+      (failure) async {
         emit(state.copyWith(isPaymentLoading: false));
         if (event.context.mounted) {
           showToast(event.context, message: failure.message, status: 'error');
         }
       },
-      (chargeResponse) {
+      (sale) async {
         emit(state.copyWith(
           isPaymentLoading: false,
+          sale: sale,
           selectedPaymentMethod: PaymentMethod.momo,
-          paymentReference: chargeResponse.reference,
-          momoChargeStatus: chargeResponse.status,
-          momoReference: chargeResponse.reference,
         ));
-        if (!event.context.mounted) return;
+        await _handleMomoSaleState(event.context, emit, sale);
+      },
+    );
+  }
 
-        if (chargeResponse.requiresOtp) {
-          event.context.push(AppRoutes.momoOtp);
-        } else if (chargeResponse.isPayOffline) {
-          event.context.push(AppRoutes.momoPendingApproval);
-        } else {
-          showToast(
-            event.context,
-            message: 'Unexpected payment status: ${chargeResponse.statusLabel}',
-            status: 'error',
-          );
+  Future<void> _handleMomoSaleState(
+    BuildContext context,
+    Emitter<SaleState> emit,
+    Sale sale,
+  ) async {
+    if (!context.mounted) return;
+
+    if (sale.requiresOtp) {
+      context.push(AppRoutes.momoOtp);
+      return;
+    }
+
+    if (sale.isMomoPending) {
+      context.push(AppRoutes.momoPendingApproval);
+      return;
+    }
+
+    if (sale.isCompleted) {
+      emit(state.copyWith(isTransactionComplete: true));
+      context.push(AppRoutes.transactionComplete);
+      return;
+    }
+
+    if (!sale.hasValidId) {
+      showToast(
+        context,
+        message: 'Sale was created but no sale id was returned',
+        status: 'error',
+      );
+      return;
+    }
+
+    final collectionResult = await _repository.completeCollection(sale.id);
+    await collectionResult.fold(
+      (failure) async {
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
+      },
+      (updated) async {
+        emit(state.copyWith(sale: updated));
+        if (!context.mounted) return;
+        if (updated.isMomoPending) {
+          context.push(AppRoutes.momoPendingApproval);
+        } else if (updated.isCompleted) {
+          emit(state.copyWith(isTransactionComplete: true));
+          context.push(AppRoutes.transactionComplete);
         }
       },
     );
@@ -724,16 +549,11 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     ResendMomoCharge event,
     Emitter<SaleState> emit,
   ) async {
-    if (state.sale == null ||
-        state.momoPhone == null ||
-        state.momoProviderCode == null) return;
+    final sale = state.sale;
+    if (sale == null) return;
 
     emit(state.copyWith(isPaymentLoading: true));
-    final request = MomoChargeRequest(
-      phone: state.momoPhone!,
-      provider: state.momoProviderCode!,
-    );
-    final result = await _repository.payMomoCharge(state.sale!.id, request);
+    final result = await _repository.completeCollection(sale.id);
     result.fold(
       (failure) {
         emit(state.copyWith(isPaymentLoading: false));
@@ -741,29 +561,11 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
           showToast(event.context, message: failure.message, status: 'error');
         }
       },
-      (chargeResponse) {
-        emit(state.copyWith(
-          isPaymentLoading: false,
-          paymentReference: chargeResponse.reference,
-          momoChargeStatus: chargeResponse.status,
-          momoReference: chargeResponse.reference,
-        ));
-        if (!event.context.mounted) return;
-
-        if (chargeResponse.requiresOtp) {
-          showToast(
-            event.context,
-            message: 'OTP resent successfully',
-            status: 'success',
-          );
-        } else if (chargeResponse.isPayOffline) {
-          event.context.push(AppRoutes.momoPendingApproval);
-        } else {
-          showToast(
-            event.context,
-            message: 'Unexpected payment status: ${chargeResponse.statusLabel}',
-            status: 'error',
-          );
+      (updated) {
+        emit(state.copyWith(isPaymentLoading: false, sale: updated));
+        if (event.context.mounted && updated.isMomoPending) {
+          showToast(event.context,
+              message: 'Payment prompt resent', status: 'success');
         }
       },
     );
@@ -773,26 +575,47 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     SubmitMomoOtp event,
     Emitter<SaleState> emit,
   ) async {
-    if (state.sale == null || state.momoReference == null) return;
+    final sale = state.sale;
+    if (sale == null) return;
 
     emit(state.copyWith(isPaymentLoading: true));
-    final result = await _repository.payMomoSubmitOtp(
-      state.sale!.id,
-      otp: event.otp,
-      reference: state.momoReference!,
-    );
-    result.fold(
-      (failure) {
+    final result = await _repository.verifySaleOtp(sale.id, otp: event.otp);
+    await result.fold(
+      (failure) async {
         emit(state.copyWith(isPaymentLoading: false));
         if (event.context.mounted) {
           showToast(event.context, message: failure.message, status: 'error');
         }
       },
-      (_) {
-        emit(state.copyWith(isPaymentLoading: false));
-        if (event.context.mounted) {
-          event.context.push(AppRoutes.momoPendingApproval);
+      (updated) async {
+        emit(state.copyWith(isPaymentLoading: false, sale: updated));
+        if (!event.context.mounted) return;
+
+        if (updated.isMomoPending || updated.isCompleted) {
+          if (updated.isCompleted) {
+            emit(state.copyWith(isTransactionComplete: true));
+            event.context.push(AppRoutes.transactionComplete);
+          } else {
+            event.context.push(AppRoutes.momoPendingApproval);
+          }
+          return;
         }
+
+        final collection = await _repository.completeCollection(updated.id);
+        collection.fold(
+          (failure) {
+            if (event.context.mounted) {
+              showToast(event.context,
+                  message: failure.message, status: 'error');
+            }
+          },
+          (afterCollection) {
+            emit(state.copyWith(sale: afterCollection));
+            if (event.context.mounted) {
+              event.context.push(AppRoutes.momoPendingApproval);
+            }
+          },
+        );
       },
     );
   }
@@ -801,59 +624,11 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
     VerifyMomoPending event,
     Emitter<SaleState> emit,
   ) async {
-    if (state.sale == null || state.momoReference == null) return;
+    final sale = state.sale;
+    if (sale == null) return;
 
     emit(state.copyWith(isPaymentLoading: true));
-    final result = await _repository.payMomoCheckPending(
-      state.sale!.id,
-      reference: state.momoReference!,
-    );
-    result.fold(
-      (failure) {
-        final message = failure.message.toLowerCase();
-        if (message.contains('already paid') ||
-            message.contains('not payable')) {
-          emit(state.copyWith(
-            isPaymentLoading: false,
-            isTransactionComplete: true,
-          ));
-          if (event.context.mounted) {
-            event.context.push(AppRoutes.transactionComplete);
-          }
-          return;
-        }
-        emit(state.copyWith(isPaymentLoading: false));
-        if (event.context.mounted) {
-          showToast(event.context, message: failure.message, status: 'error');
-        }
-      },
-      (response) {
-        if (response.isSuccess || response.isAlreadyPaid) {
-          emit(state.copyWith(
-            isPaymentLoading: false,
-            isTransactionComplete: true,
-          ));
-          if (event.context.mounted) {
-            event.context.push(AppRoutes.transactionComplete);
-          }
-        } else {
-          emit(state.copyWith(isPaymentLoading: false));
-          if (event.context.mounted) {
-            showToast(
-              event.context,
-              message: response.message ?? 'Payment not confirmed yet',
-              status: 'error',
-            );
-          }
-        }
-      },
-    );
-  }
-
-  Future<void> _onPayCard(PayWithCard event, Emitter<SaleState> emit) async {
-    if (state.sale == null) return;
-    emit(state.copyWith(isPaymentLoading: true));
-    final result = await _repository.payCardInitialize(state.sale!.id);
+    final result = await _repository.pollPaymentStatus(sale.id);
     result.fold(
       (failure) {
         emit(state.copyWith(isPaymentLoading: false));
@@ -861,58 +636,16 @@ class SaleBloc extends Bloc<SaleEvent, SaleState> {
           showToast(event.context, message: failure.message, status: 'error');
         }
       },
-      (response) {
-        emit(state.copyWith(
-          isPaymentLoading: false,
-          selectedPaymentMethod: PaymentMethod.card,
-          cardAuthorizationUrl: response.authorizationUrl,
-          cardReference: response.reference,
-          paymentReference: response.reference,
-        ));
-        if (event.context.mounted) {
-          event.context.push(AppRoutes.cardCheckout);
-        }
-      },
-    );
-  }
-
-  Future<void> _onVerifyCardPayment(
-    VerifyCardPayment event,
-    Emitter<SaleState> emit,
-  ) async {
-    if (state.sale == null || state.cardReference == null) return;
-
-    emit(state.copyWith(isPaymentLoading: true));
-    final result = await _repository.payCardVerify(
-      state.sale!.id,
-      state.cardReference!,
-    );
-    result.fold(
-      (failure) {
-        final message = failure.message.toLowerCase();
-        if (message.contains('already paid') ||
-            message.contains('not payable')) {
-          emit(state.copyWith(
-            isPaymentLoading: false,
-            isTransactionComplete: true,
-          ));
+      (updated) {
+        emit(state.copyWith(isPaymentLoading: false, sale: updated));
+        if (updated.isCompleted) {
+          emit(state.copyWith(isTransactionComplete: true));
           if (event.context.mounted) {
             event.context.push(AppRoutes.transactionComplete);
           }
-          return;
-        }
-        emit(state.copyWith(isPaymentLoading: false));
-        if (event.context.mounted) {
-          showToast(event.context, message: failure.message, status: 'error');
-        }
-      },
-      (_) {
-        emit(state.copyWith(
-          isPaymentLoading: false,
-          isTransactionComplete: true,
-        ));
-        if (event.context.mounted) {
-          event.context.push(AppRoutes.transactionComplete);
+        } else if (event.context.mounted) {
+          showToast(event.context,
+              message: 'Payment not confirmed yet', status: 'error');
         }
       },
     );

@@ -9,7 +9,7 @@
     "/": {
       "post": {
         "operationId": "root_create",
-        "tags": ["Vehicles"],
+        "tags": ["Vehicles — Desktop"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -32,12 +32,8 @@
         },
         "security": [
           {
-            "jwtAuth": []
-          },
-          {
             "BearerAuth": []
-          },
-          {}
+          }
         ],
         "responses": {
           "201": {
@@ -191,7 +187,14 @@
         ],
         "responses": {
           "200": {
-            "description": "No response body"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictResponse"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -221,7 +224,113 @@
         ],
         "responses": {
           "200": {
-            "description": "No response body"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": "JSON object"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/device-check/": {
+      "post": {
+        "operationId": "api_v1_auth_device_check_create",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCheckRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCheckRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceCheckResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceCheckResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register-device/": {
+      "post": {
+        "operationId": "api_v1_auth_register_device_create",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRegisterRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRegisterRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -514,6 +623,859 @@
         "responses": {
           "204": {
             "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/devices/": {
+      "get": {
+        "operationId": "api_v1_devices_list",
+        "description": "Restrict querysets to the request user's companies.\nOptional ?company=<uuid> narrows further (must be a company they belong to).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "company",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional company UUID to filter results by company."
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "station",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional station UUID to filter devices."
+          }
+        ],
+        "tags": ["Devices"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedDeviceList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/": {
+      "get": {
+        "operationId": "api_v1_devices_retrieve",
+        "description": "Restrict querysets to the request user's companies.\nOptional ?company=<uuid> narrows further (must be a company they belong to).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this device.",
+            "required": true
+          }
+        ],
+        "tags": ["api"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/restore/": {
+      "post": {
+        "operationId": "api_v1_devices_restore_create",
+        "description": "Restrict querysets to the request user's companies.\nOptional ?company=<uuid> narrows further (must be a company they belong to).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this device.",
+            "required": true
+          }
+        ],
+        "tags": ["Devices"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/devices/{id}/revoke/": {
+      "post": {
+        "operationId": "api_v1_devices_revoke_create",
+        "description": "Restrict querysets to the request user's companies.\nOptional ?company=<uuid> narrows further (must be a company they belong to).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this device.",
+            "required": true
+          }
+        ],
+        "tags": ["Devices"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/eod/private/": {
+      "get": {
+        "operationId": "api_v1_eod_private_list",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "company",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional company UUID to filter results by company."
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["Reports"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedEodReportList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/eod/private/{id}/": {
+      "get": {
+        "operationId": "api_v1_eod_private_retrieve",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "company",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional company UUID to filter results by company."
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this eod report.",
+            "required": true
+          }
+        ],
+        "tags": ["Reports"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EodReport"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/callback/": {
+      "get": {
+        "operationId": "api_v1_integrations_moolre_callback_retrieve",
+        "description": "Moolre payment webhook — accepts all HTTP methods and logs every request.",
+        "tags": ["Integrations"],
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreCallbackResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "api_v1_integrations_moolre_callback_create",
+        "description": "Moolre payment webhook — accepts all HTTP methods and logs every request.",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreCallbackResponseRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreCallbackResponseRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreCallbackResponseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreCallbackResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "api_v1_integrations_moolre_callback_update",
+        "description": "Moolre payment webhook — accepts all HTTP methods and logs every request.",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreCallbackResponseRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreCallbackResponseRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreCallbackResponseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreCallbackResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "api_v1_integrations_moolre_callback_destroy",
+        "description": "Moolre payment webhook — accepts all HTTP methods and logs every request.",
+        "tags": ["Integrations"],
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreCallbackResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/data/": {
+      "get": {
+        "operationId": "api_v1_integrations_moolre_data_retrieve",
+        "description": "Proxy Moolre open transact data (banks, etc.).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "country",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Country code (default: gha)"
+          },
+          {
+            "in": "query",
+            "name": "data",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Data type (default: banks)"
+          }
+        ],
+        "tags": ["Integrations"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": "JSON object"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": "Client error"
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/data/banks/": {
+      "get": {
+        "operationId": "api_v1_integrations_moolre_data_banks_retrieve",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "country",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Country code (default: gha)"
+          }
+        ],
+        "tags": ["Integrations"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": "JSON object"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": "Client error"
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/payment/verify-otp/": {
+      "post": {
+        "operationId": "api_v1_integrations_moolre_payment_verify_otp_create",
+        "description": "Submit the SMS OTP after Moolre returns code TP14 on payment initiation.\n\nSame as POST /api/v1/sales/sales/{id}/verify-otp/ — see Moolre initiate-payment docs.",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreVerifyPaymentOtpRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreVerifyPaymentOtpRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreVerifyPaymentOtpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreVerifyPaymentOtpResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/test/payment-collection/": {
+      "post": {
+        "operationId": "api_v1_integrations_moolre_test_payment_collection_create",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestPaymentRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestPaymentRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestPaymentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreTestPaymentResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/test/sms/": {
+      "post": {
+        "operationId": "api_v1_integrations_moolre_test_sms_create",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestSMSRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestSMSRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestSMSRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreTestSMSResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/test/sms/async/": {
+      "post": {
+        "operationId": "api_v1_integrations_moolre_test_sms_async_create",
+        "description": "Queue SMS via Celery (same path used for login/sale notifications).",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestSMSRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestSMSRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreTestSMSRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreTestSMSResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/test/validate-name/": {
+      "post": {
+        "operationId": "api_v1_integrations_moolre_test_validate_name_create",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreValidateNameRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreValidateNameRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreValidateNameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreValidateNameResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreErrorResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/moolre/validate-name/": {
+      "post": {
+        "operationId": "api_v1_integrations_moolre_validate_name_create",
+        "tags": ["Integrations"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreValidateNameRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreValidateNameRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MoolreValidateNameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreValidateNameResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoolreErrorResponse"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -1098,6 +2060,529 @@
         "responses": {
           "204": {
             "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/tank-readings/": {
+      "get": {
+        "operationId": "api_v1_inventory_tank_readings_list",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "company",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional company UUID to filter results by company."
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedTankReadingList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "api_v1_inventory_tank_readings_create",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "tags": ["Tank Readings"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TankReadingRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TankReadingRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TankReadingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankReading"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/tank-readings/{id}/": {
+      "get": {
+        "operationId": "api_v1_inventory_tank_readings_retrieve",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "company",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional company UUID to filter results by company."
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankReadingDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "api_v1_inventory_tank_readings_update",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TankReadingRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TankReadingRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TankReadingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankReading"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "api_v1_inventory_tank_readings_partial_update",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTankReadingRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTankReadingRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTankReadingRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankReading"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "api_v1_inventory_tank_readings_destroy",
+        "description": "Maps DRF action + rbac_resource to seeded permission codenames (e.g. see:sales).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/tank-readings/{id}/history/": {
+      "get": {
+        "operationId": "api_v1_inventory_tank_readings_history_list_2",
+        "description": "Audit log for one station tank (refills, sales, adjustments).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedTankReadingHistoryEntryList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/tank-readings/{id}/restock/": {
+      "post": {
+        "operationId": "api_v1_inventory_tank_readings_restock_create",
+        "description": "Top up tank stock after a delivery (owner or supervisor).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TankRestockRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TankRestockRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TankRestockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankReading"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/tank-readings/{id}/set-reading/": {
+      "post": {
+        "operationId": "api_v1_inventory_tank_readings_set_reading_create",
+        "description": "Manual tank reading correction (owner or supervisor).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this tank reading.",
+            "required": true
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TankSetReadingRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TankSetReadingRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TankSetReadingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankReading"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/inventory/tank-readings/history/": {
+      "get": {
+        "operationId": "api_v1_inventory_tank_readings_history_list",
+        "description": "Audit log of all tank increases and decreases (company-scoped).",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "company",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Optional company UUID to filter results by company."
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "tags": ["Tank Readings"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedTankReadingHistoryList"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -3110,6 +4595,180 @@
         }
       }
     },
+    "/api/v1/sales/sales/{id}/complete-collection/": {
+      "post": {
+        "operationId": "api_v1_sales_sales_complete_collection_create",
+        "description": "Send the MoMo debit prompt after OTP verification (use if moolre_transaction_id is empty or \"all\"). No request body.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this sale.",
+            "required": true
+          }
+        ],
+        "tags": ["Sales"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/sales/sales/{id}/payment-status/": {
+      "get": {
+        "operationId": "api_v1_sales_sales_payment_status_retrieve",
+        "description": "Poll Moolre for the latest payment state using only the sale id in the URL (looks up payment_external_ref and moolre_transaction_id on the sale). No request body. Use when status stays pending after the payer approves MoMo.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Sale UUID from the create-sale response (e.g. 0fe4429b-1246-40d2-8858-7c37b6ecdfb6). Not your JWT.",
+            "required": true
+          }
+        ],
+        "tags": ["Sales"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "api_v1_sales_sales_payment_status_create",
+        "description": "Poll Moolre for the latest payment state using only the sale id in the URL (looks up payment_external_ref and moolre_transaction_id on the sale). No request body. Use when status stays pending after the payer approves MoMo.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Sale UUID from the create-sale response (e.g. 0fe4429b-1246-40d2-8858-7c37b6ecdfb6). Not your JWT.",
+            "required": true
+          }
+        ],
+        "tags": ["Sales"],
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/sales/sales/{id}/verify-otp/": {
+      "post": {
+        "operationId": "api_v1_sales_sales_verify_otp_create",
+        "description": "Step 2 of MoMo sale collection — submit the SMS OTP after create returns payment_collection.status=otp_required.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "A UUID string identifying this sale.",
+            "required": true
+          }
+        ],
+        "tags": ["Sales"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaleVerifyOtpRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SaleVerifyOtpRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SaleVerifyOtpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sale"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/staff/pump-attendants/": {
       "get": {
         "operationId": "api_v1_staff_pump_attendants_list",
@@ -3729,7 +5388,14 @@
         ],
         "responses": {
           "200": {
-            "description": "No response body"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationAttendantPinLoginResponse"
+                }
+              }
+            },
+            "description": ""
           }
         }
       }
@@ -4109,6 +5775,91 @@
         }
       }
     },
+    "/api/v1/vehicles/desktop/history/": {
+      "get": {
+        "operationId": "api_v1_vehicles_desktop_history_list",
+        "description": "Vehicle crossing history for the logged-in desktop station.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Max rows (default 200)"
+          }
+        ],
+        "tags": ["Vehicles — Desktop"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleEvent"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/vehicles/desktop/login/": {
+      "post": {
+        "operationId": "api_v1_vehicles_desktop_login_create",
+        "description": "PumpIQ Desktop — log in with station UUID + 4-digit station PIN.",
+        "tags": ["Vehicles — Desktop"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StationDesktopLoginRequest"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/StationDesktopLoginRequest"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/StationDesktopLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          },
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationDesktopLoginResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/v1/vehicles/events/": {
       "get": {
         "operationId": "api_v1_vehicles_events_list",
@@ -4140,6 +5891,14 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "station",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by station UUID"
           }
         ],
         "tags": ["Vehicles"],
@@ -4216,7 +5975,7 @@
     "/api/v1/vehicles/vehicle-events/": {
       "post": {
         "operationId": "api_v1_vehicles_vehicle_events_create",
-        "tags": ["Vehicles"],
+        "tags": ["Vehicles — Desktop"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -4239,12 +5998,8 @@
         },
         "security": [
           {
-            "jwtAuth": []
-          },
-          {
             "BearerAuth": []
-          },
-          {}
+          }
         ],
         "responses": {
           "201": {
@@ -4263,6 +6018,16 @@
   },
   "components": {
     "schemas": {
+      "ActorRoleEnum": {
+        "enum": ["owner", "supervisor", "pump_attendant", "system"],
+        "type": "string",
+        "description": "* `owner` - Owner\n* `supervisor` - Supervisor\n* `pump_attendant` - Pump Attendant\n* `system` - System"
+      },
+      "ChangeTypeEnum": {
+        "enum": ["opening", "refill", "sale", "adjustment"],
+        "type": "string",
+        "description": "* `opening` - Opening\n* `refill` - Refill\n* `sale` - Sale\n* `adjustment` - Adjustment"
+      },
       "Company": {
         "type": "object",
         "properties": {
@@ -4505,6 +6270,225 @@
         },
         "required": ["company", "phone_number", "plate_number", "station"]
       },
+      "Device": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "station_id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "device_name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "platform": {
+            "type": "string",
+            "readOnly": true
+          },
+          "system_name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "is_physical_device": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "model": {
+            "type": "string",
+            "readOnly": true
+          },
+          "os_version": {
+            "type": "string",
+            "readOnly": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeviceStatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "created_at",
+          "device_name",
+          "id",
+          "is_physical_device",
+          "model",
+          "os_version",
+          "platform",
+          "station_id",
+          "status",
+          "system_name",
+          "updated_at"
+        ]
+      },
+      "DeviceCheckRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["id", "station_id"]
+      },
+      "DeviceCheckResponse": {
+        "type": "object",
+        "properties": {
+          "registered": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "device": {
+            "$ref": "#/components/schemas/Device"
+          }
+        },
+        "required": ["registered"]
+      },
+      "DeviceRegisterRequest": {
+        "type": "object",
+        "properties": {
+          "device_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "platform": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "system_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "is_physical_device": {
+            "type": "boolean"
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "os_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "station_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "device_name",
+          "is_physical_device",
+          "model",
+          "os_version",
+          "platform",
+          "station_id",
+          "system_name"
+        ]
+      },
+      "DeviceStatusEnum": {
+        "enum": ["active", "revoked"],
+        "type": "string",
+        "description": "* `active` - Active\n* `revoked` - Revoked"
+      },
+      "EodReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "report_date": {
+            "type": "string",
+            "format": "date",
+            "readOnly": true
+          },
+          "payload": {
+            "readOnly": true
+          },
+          "public_url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "private_url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "email_sent_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "nullable": true
+          },
+          "sms_sent_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "company",
+          "created_at",
+          "email_sent_at",
+          "id",
+          "payload",
+          "private_url",
+          "public_url",
+          "report_date",
+          "sms_sent_at",
+          "station",
+          "updated_at"
+        ]
+      },
       "MLModelRun": {
         "type": "object",
         "properties": {
@@ -4577,6 +6561,248 @@
           "territory",
           "updated_at"
         ]
+      },
+      "MoolreCallbackResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "callback_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sale_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "sale_status_before": {
+            "type": "string",
+            "nullable": true
+          },
+          "sale_status_after": {
+            "type": "string",
+            "nullable": true
+          },
+          "configured_callback_url": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "payload": {}
+        },
+        "required": [
+          "callback_id",
+          "configured_callback_url",
+          "method",
+          "payload",
+          "status"
+        ]
+      },
+      "MoolreCallbackResponseRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "callback_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sale_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "sale_status_before": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1
+          },
+          "sale_status_after": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1
+          },
+          "configured_callback_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "method": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payload": {}
+        },
+        "required": [
+          "callback_id",
+          "configured_callback_url",
+          "method",
+          "payload",
+          "status"
+        ]
+      },
+      "MoolreErrorResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "moolre": {}
+        },
+        "required": ["detail"]
+      },
+      "MoolreTestPaymentPaymentMethodEnum": {
+        "enum": ["mobile_money", "ussd", "card"],
+        "type": "string",
+        "description": "* `mobile_money` - mobile_money\n* `ussd` - ussd\n* `card` - card"
+      },
+      "MoolreTestPaymentRequest": {
+        "type": "object",
+        "properties": {
+          "payment_method": {
+            "$ref": "#/components/schemas/MoolreTestPaymentPaymentMethodEnum"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "default": "1.00"
+          },
+          "externalref": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          }
+        },
+        "required": ["payment_method"]
+      },
+      "MoolreTestPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "externalref": {
+            "type": "string"
+          },
+          "payment_link": {
+            "type": "string",
+            "nullable": true
+          },
+          "moolre": {}
+        },
+        "required": ["status"]
+      },
+      "MoolreTestSMSRequest": {
+        "type": "object",
+        "properties": {
+          "phone_number": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "string"
+          }
+        },
+        "required": ["phone_number"]
+      },
+      "MoolreTestSMSResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "moolre": {},
+          "task_id": {
+            "type": "string"
+          }
+        },
+        "required": ["status"]
+      },
+      "MoolreValidateNameRequest": {
+        "type": "object",
+        "properties": {
+          "phone_number": {
+            "type": "string",
+            "minLength": 1
+          },
+          "channel": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 1,
+            "default": "GHS"
+          },
+          "sublistid": {
+            "type": "string"
+          }
+        },
+        "required": ["phone_number"]
+      },
+      "MoolreValidateNameResponse": {
+        "type": "object",
+        "properties": {
+          "account_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "moolre": {}
+        },
+        "required": ["moolre"]
+      },
+      "MoolreVerifyPaymentOtpRequest": {
+        "type": "object",
+        "properties": {
+          "sale_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "otp": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          }
+        },
+        "required": ["otp", "sale_id"]
+      },
+      "MoolreVerifyPaymentOtpResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "sale_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "external_ref": {
+            "type": "string"
+          },
+          "moolre_transaction_id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "moolre": {}
+        },
+        "required": ["status"]
       },
       "PaginatedCompanyList": {
         "type": "object",
@@ -4658,6 +6884,62 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Customer"
+            }
+          }
+        }
+      },
+      "PaginatedDeviceList": {
+        "type": "object",
+        "required": ["count", "results"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            }
+          }
+        }
+      },
+      "PaginatedEodReportList": {
+        "type": "object",
+        "required": ["count", "results"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EodReport"
             }
           }
         }
@@ -4914,6 +7196,90 @@
           }
         }
       },
+      "PaginatedTankReadingHistoryEntryList": {
+        "type": "object",
+        "required": ["count", "results"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TankReadingHistoryEntry"
+            }
+          }
+        }
+      },
+      "PaginatedTankReadingHistoryList": {
+        "type": "object",
+        "required": ["count", "results"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TankReadingHistory"
+            }
+          }
+        }
+      },
+      "PaginatedTankReadingList": {
+        "type": "object",
+        "required": ["count", "results"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=4"
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri",
+            "example": "http://api.example.org/accounts/?page=2"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TankReading"
+            }
+          }
+        }
+      },
       "PaginatedTerritoryList": {
         "type": "object",
         "required": ["count", "results"],
@@ -5148,18 +7514,8 @@
             "format": "decimal",
             "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$"
           },
-          "quantity": {
-            "type": "string",
-            "format": "decimal",
-            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$"
-          },
-          "unit_price": {
-            "type": "string",
-            "format": "decimal",
-            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$"
-          },
           "payment_method": {
-            "$ref": "#/components/schemas/PaymentMethodEnum"
+            "$ref": "#/components/schemas/SalePaymentMethodEnum"
           },
           "account_number": {
             "type": "string",
@@ -5168,9 +7524,6 @@
           "account_name": {
             "type": "string",
             "maxLength": 150
-          },
-          "status": {
-            "$ref": "#/components/schemas/StatusEnum"
           }
         }
       },
@@ -5256,6 +7609,23 @@
           }
         }
       },
+      "PatchedTankReadingRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "PatchedTerritoryRequest": {
         "type": "object",
         "properties": {
@@ -5292,10 +7662,10 @@
           }
         }
       },
-      "PaymentMethodEnum": {
-        "enum": ["mobile_money", "ussd", "card"],
+      "PaymentCollectionStatusEnum": {
+        "enum": ["otp_required", "momo_pending", "card_pending", "failed"],
         "type": "string",
-        "description": "* `mobile_money` - Mobile Money\n* `ussd` - USSD\n* `card` - Card"
+        "description": "* `otp_required` - OTP required\n* `momo_pending` - Awaiting MoMo approval\n* `card_pending` - Awaiting card payment\n* `failed` - Collection failed"
       },
       "Permission": {
         "type": "object",
@@ -5389,6 +7759,61 @@
           }
         },
         "required": ["company"]
+      },
+      "PredictResponse": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "territory": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "horizon_days": {
+            "type": "integer"
+          },
+          "forecast": {
+            "type": "array",
+            "items": {}
+          },
+          "peak_windows": {
+            "type": "array",
+            "items": {}
+          },
+          "anomaly_score": {
+            "type": "number",
+            "format": "double"
+          },
+          "models_available": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "anomaly_score",
+          "company",
+          "forecast",
+          "horizon_days",
+          "models_available",
+          "peak_windows"
+        ]
       },
       "PumpAttendant": {
         "type": "object",
@@ -5529,15 +7954,17 @@
           "quantity": {
             "type": "string",
             "format": "decimal",
-            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$"
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true
           },
           "unit_price": {
             "type": "string",
             "format": "decimal",
-            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$"
+            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$",
+            "readOnly": true
           },
           "payment_method": {
-            "$ref": "#/components/schemas/PaymentMethodEnum"
+            "$ref": "#/components/schemas/SalePaymentMethodEnum"
           },
           "account_number": {
             "type": "string",
@@ -5548,7 +7975,43 @@
             "maxLength": 150
           },
           "status": {
-            "$ref": "#/components/schemas/StatusEnum"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SaleStatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "payment_external_ref": {
+            "type": "string",
+            "readOnly": true
+          },
+          "moolre_transaction_id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "payment_link": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "payment_otp_required": {
+            "type": "boolean",
+            "readOnly": true,
+            "description": "Moolre returned TP14 — payer must submit SMS OTP before collection completes."
+          },
+          "payment_collection_status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaymentCollectionStatusEnum"
+              }
+            ],
+            "readOnly": true,
+            "description": "Moolre collection step: otp_required → verify-otp → momo_pending → callback.\n\n* `otp_required` - OTP required\n* `momo_pending` - Awaiting MoMo approval\n* `card_pending` - Awaiting card payment\n* `failed` - Collection failed"
+          },
+          "payment_collection": {
+            "type": "string",
+            "readOnly": true
           },
           "created_at": {
             "type": "string",
@@ -5567,10 +8030,24 @@
           "created_at",
           "customer",
           "id",
+          "moolre_transaction_id",
+          "payment_collection",
+          "payment_collection_status",
+          "payment_external_ref",
+          "payment_link",
+          "payment_otp_required",
           "pump_attendant",
+          "quantity",
+          "status",
           "stock",
+          "unit_price",
           "updated_at"
         ]
+      },
+      "SalePaymentMethodEnum": {
+        "enum": ["mobile_money", "ussd", "card"],
+        "type": "string",
+        "description": "* `mobile_money` - Mobile Money\n* `ussd` - USSD\n* `card` - Card"
       },
       "SaleRequest": {
         "type": "object",
@@ -5596,18 +8073,8 @@
             "format": "decimal",
             "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$"
           },
-          "quantity": {
-            "type": "string",
-            "format": "decimal",
-            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$"
-          },
-          "unit_price": {
-            "type": "string",
-            "format": "decimal",
-            "pattern": "^-?\\d{0,10}(?:\\.\\d{0,2})?$"
-          },
           "payment_method": {
-            "$ref": "#/components/schemas/PaymentMethodEnum"
+            "$ref": "#/components/schemas/SalePaymentMethodEnum"
           },
           "account_number": {
             "type": "string",
@@ -5616,12 +8083,25 @@
           "account_name": {
             "type": "string",
             "maxLength": 150
-          },
-          "status": {
-            "$ref": "#/components/schemas/StatusEnum"
           }
         },
         "required": ["amount", "company", "customer", "pump_attendant", "stock"]
+      },
+      "SaleStatusEnum": {
+        "enum": ["pending", "completed", "failed"],
+        "type": "string",
+        "description": "* `pending` - Pending\n* `completed` - Completed\n* `failed` - Failed"
+      },
+      "SaleVerifyOtpRequest": {
+        "type": "object",
+        "properties": {
+          "otp": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          }
+        },
+        "required": ["otp"]
       },
       "Station": {
         "type": "object",
@@ -5693,6 +8173,93 @@
         },
         "required": ["station_id"]
       },
+      "StationAttendantPinLoginResponse": {
+        "type": "object",
+        "properties": {
+          "refresh": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "roles": {
+            "type": "array",
+            "items": {}
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "station_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pump_attendant_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "access",
+          "permissions",
+          "pump_attendant_id",
+          "refresh",
+          "roles",
+          "station_id",
+          "user"
+        ]
+      },
+      "StationDesktopLoginRequest": {
+        "type": "object",
+        "properties": {
+          "station_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station_pin": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 4
+          }
+        },
+        "required": ["station_id", "station_pin"]
+      },
+      "StationDesktopLoginResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "station_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station_name": {
+            "type": "string"
+          },
+          "company_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company_name": {
+            "type": "string"
+          },
+          "station": {}
+        },
+        "required": [
+          "access_token",
+          "company_id",
+          "company_name",
+          "station",
+          "station_id",
+          "station_name"
+        ]
+      },
       "StationRequest": {
         "type": "object",
         "properties": {
@@ -5715,11 +8282,6 @@
           }
         },
         "required": ["company", "name", "territory"]
-      },
-      "StatusEnum": {
-        "enum": ["pending", "completed", "failed"],
-        "type": "string",
-        "description": "* `pending` - Pending\n* `completed` - Completed\n* `failed` - Failed"
       },
       "Stock": {
         "type": "object",
@@ -5917,6 +8479,371 @@
           }
         },
         "required": ["company", "station", "territory", "user"]
+      },
+      "TankReading": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reading": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true,
+            "description": "Tank level in litres at this station for this fuel type."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "company",
+          "created_at",
+          "id",
+          "reading",
+          "station",
+          "stock",
+          "updated_at"
+        ]
+      },
+      "TankReadingDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reading": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true,
+            "description": "Tank level in litres at this station for this fuel type."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TankReadingHistoryEntry"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "company",
+          "created_at",
+          "history",
+          "id",
+          "reading",
+          "station",
+          "stock",
+          "updated_at"
+        ]
+      },
+      "TankReadingHistory": {
+        "type": "object",
+        "description": "Full history row including tank_reading — used on the global history list.",
+        "properties": {
+          "tank_reading": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "territory": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reading_before": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true
+          },
+          "reading_after": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true
+          },
+          "delta": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true,
+            "description": "Litres added (+) or removed (-)."
+          },
+          "change_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChangeTypeEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "changed_by": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "actor_role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ActorRoleEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "sale": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "actor_role",
+          "change_type",
+          "changed_by",
+          "company",
+          "created_at",
+          "delta",
+          "id",
+          "notes",
+          "reading_after",
+          "reading_before",
+          "sale",
+          "station",
+          "stock",
+          "tank_reading",
+          "territory",
+          "updated_at"
+        ]
+      },
+      "TankReadingHistoryEntry": {
+        "type": "object",
+        "description": "History row without nesting tank_reading — used inside tank detail and nested routes.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "territory": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reading_before": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true
+          },
+          "reading_after": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true
+          },
+          "delta": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$",
+            "readOnly": true,
+            "description": "Litres added (+) or removed (-)."
+          },
+          "change_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChangeTypeEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "changed_by": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "actor_role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ActorRoleEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "sale": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "actor_role",
+          "change_type",
+          "changed_by",
+          "company",
+          "created_at",
+          "delta",
+          "id",
+          "notes",
+          "reading_after",
+          "reading_before",
+          "sale",
+          "station",
+          "stock",
+          "territory",
+          "updated_at"
+        ]
+      },
+      "TankReadingRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "station": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stock": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": ["company", "station", "stock"]
+      },
+      "TankRestockRequest": {
+        "type": "object",
+        "properties": {
+          "litres": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$"
+          },
+          "notes": {
+            "type": "string",
+            "default": ""
+          }
+        },
+        "required": ["litres"]
+      },
+      "TankSetReadingRequest": {
+        "type": "object",
+        "properties": {
+          "reading": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d{0,9}(?:\\.\\d{0,3})?$"
+          },
+          "notes": {
+            "type": "string",
+            "default": ""
+          }
+        },
+        "required": ["reading"]
       },
       "Territory": {
         "type": "object",

@@ -5,7 +5,6 @@ import 'package:pump_iq/src/imports/packages_imports.dart';
 
 import '../../data/models/sale_model.dart';
 import '../providers/sale_bloc.dart';
-import '../widgets/otp_verification_sheet.dart';
 
 class TransactionCompleteScreen extends StatefulWidget {
   const TransactionCompleteScreen({super.key});
@@ -22,14 +21,6 @@ class _TransactionCompleteScreenState extends State<TransactionCompleteScreen> {
   void _handleComplete(BuildContext context) {
     context.read<SaleBloc>().add(const ResetSale());
     context.read<SessionBloc>().add(const SessionLogoutRequested());
-  }
-
-  void _showOtpSheet(BuildContext context) {
-    final bloc = context.read<SaleBloc>();
-    final phone = bloc.state.customer?.phone ?? '';
-    showAppSheet<void>(
-      child: OtpVerificationSheet(phone: phone),
-    );
   }
 
   Future<void> _handlePrintReceipt(BuildContext context) async {
@@ -93,30 +84,30 @@ class _TransactionCompleteScreenState extends State<TransactionCompleteScreen> {
   ReceiptInput _buildReceiptInput(SaleState saleState, AppUser? user) {
     final sale = saleState.sale!;
     final customer = saleState.customer;
+    final fuelLabel = saleState.fuelPrices
+        .where((f) => f.id == sale.stockId)
+        .map((f) => f.fuelType)
+        .firstOrNull;
 
     return ReceiptInput(
       saleId: sale.id,
-      fuelType: sale.fuelType,
-      litres: sale.litres,
+      fuelType: fuelLabel,
+      litres: sale.quantity ?? 0,
       unitPrice: sale.unitPrice,
-      price: sale.price,
-      discount: sale.discount,
-      netPrice: sale.netPrice,
-      currencySymbol: sale.currencySymbol ?? 'GHS',
-      stationName: sale.stationName ?? user?.stationName,
-      pumpAttendantName: sale.pumpAttendantName ?? user?.name,
+      price: sale.amount,
+      netPrice: sale.amount,
+      currencySymbol: 'GHS',
+      stationName: user?.stationName,
+      pumpAttendantName: user?.name,
       createdAt: sale.createdAt,
-      pointsEarned: sale.pointsEarned,
-      customerName: sale.customerName ?? customer?.name,
+      customerName: customer?.name,
       customerPlate: customer?.plateNumber,
       customerPhone: customer?.phone,
       paymentMethodLabel: _paymentMethodLabel(saleState),
       paymentReference: _paymentReference(saleState),
       momoPhone: saleState.momoPhone,
-      momoProviderLabel: _momoProviderLabel(saleState),
-      momoChargeStatusLabel: saleState.momoChargeStatus?.apiValue,
-      cardReference: saleState.cardReference,
-      cardAuthorizationUrl: saleState.cardAuthorizationUrl,
+      momoProviderLabel: saleState.selectedMomoProvider?.label,
+      momoChargeStatusLabel: sale.paymentCollectionStatus?.name,
     );
   }
 
@@ -124,23 +115,16 @@ class _TransactionCompleteScreenState extends State<TransactionCompleteScreen> {
     return switch (state.selectedPaymentMethod) {
       PaymentMethod.cash => 'Cash',
       PaymentMethod.momo => 'MoMo',
-      PaymentMethod.card => 'Card',
       null => state.sale?.paymentMethod ?? 'Unknown',
     };
   }
 
   String? _paymentReference(SaleState state) {
-    return state.paymentReference ?? state.momoReference ?? state.cardReference;
-  }
-
-  String? _momoProviderLabel(SaleState state) {
-    return state.selectedMomoProvider?.label ?? state.momoProviderCode;
+    return state.sale?.paymentExternalRef ?? state.sale?.moolreTransactionId;
   }
 
   @override
   Widget build(BuildContext context) {
-    final otpPending = context.select((SaleBloc b) => b.state.otpPending);
-    final otpVerified = context.select((SaleBloc b) => b.state.otpVerified);
     final sale = context.select((SaleBloc b) => b.state.sale);
     final colorScheme = context.colors;
 
@@ -150,18 +134,6 @@ class _TransactionCompleteScreenState extends State<TransactionCompleteScreen> {
         showBack: false,
         isTransparent: true,
         foregroundColor: colorScheme.onPrimary,
-        actions: [
-          if (otpPending && !otpVerified)
-            IconButton(
-              onPressed: () => _showOtpSheet(context),
-              icon: Icon(
-                Icons.verified_user_outlined,
-                color: colorScheme.onPrimary,
-                size: 22.sp,
-              ),
-              tooltip: 'Verify Customer',
-            ),
-        ],
       ),
       body: SafeArea(
         child: Column(

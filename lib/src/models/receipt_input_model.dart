@@ -40,8 +40,6 @@ class ReceiptInput {
     this.momoPhone,
     this.momoProviderLabel,
     this.momoChargeStatusLabel,
-    this.cardReference,
-    this.cardAuthorizationUrl,
     ReceiptPaperWidth? paperWidth,
   }) : paperWidth = paperWidth ?? ReceiptPaperWidth.fromEnv();
 
@@ -65,14 +63,9 @@ class ReceiptInput {
   final String? momoPhone;
   final String? momoProviderLabel;
   final String? momoChargeStatusLabel;
-  final String? cardReference;
-  final String? cardAuthorizationUrl;
   final ReceiptPaperWidth paperWidth;
 
   double get totalAmount => netPrice ?? price ?? 0;
-
-  String? get truncatedCardAuthUrl =>
-      truncateReceiptField(cardAuthorizationUrl, maxLength: 60);
 }
 
 String? truncateReceiptField(String? value, {required int maxLength}) {

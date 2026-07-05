@@ -2,12 +2,11 @@ import 'package:pump_iq/src/imports/core_imports.dart';
 import 'package:pump_iq/src/imports/packages_imports.dart';
 
 import '../../../auth/data/models/pump_info_model.dart';
-import '../../data/models/customer_model.dart';
+import '../../../customer/data/models/customer_model.dart';
 import '../../data/models/fuel_price_model.dart';
 import '../../data/models/sale_model.dart';
 import '../providers/sale_bloc.dart';
 import '../widgets/fuel_type_picker_sheet.dart';
-import '../widgets/otp_verification_sheet.dart';
 import '../widgets/pump_picker_sheet.dart';
 
 class PurchaseSaleScreen extends StatefulWidget {
@@ -22,10 +21,8 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
   final _vehicleController = TextEditingController();
   final _phoneController = TextEditingController();
   final _amountController = TextEditingController();
-  final _discountController = TextEditingController();
 
   FuelPrice? _selectedFuelPrice;
-  bool _usePointsDiscount = false;
   late final List<PumpInfo> _pumps;
   PumpInfo? _selectedPump;
 
@@ -43,7 +40,6 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
     _vehicleController.dispose();
     _phoneController.dispose();
     _amountController.dispose();
-    _discountController.dispose();
     super.dispose();
   }
 
@@ -51,8 +47,8 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
     final plate = _vehicleController.text.trim();
     if (plate.isEmpty) return;
     context.read<SaleBloc>().add(
-          LookupCustomerByPlate(context: context, plateNumber: plate),
-        );
+      LookupCustomerByPlate(context: context, plateNumber: plate),
+    );
   }
 
   void _onVehicleNumberChanged(String value) {
@@ -64,25 +60,7 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
     final lookedUp = (customer.plateNumber ?? '').trim().toUpperCase();
     if (edited != lookedUp) {
       bloc.add(const ClearCustomerLookup());
-      _discountController.clear();
-      setState(() => _usePointsDiscount = false);
     }
-  }
-
-  void _syncDiscountFromCustomer(Customer? customer) {
-    if (customer != null && customer.hasInsurancePoints) {
-      _discountController.text = _formatPoints(customer.insurancePoints);
-    } else {
-      _discountController.clear();
-      _usePointsDiscount = false;
-    }
-  }
-
-  String _formatPoints(double points) {
-    if (points == points.truncateToDouble()) {
-      return points.toInt().toString();
-    }
-    return points.toStringAsFixed(2);
   }
 
   void _handleContinue() {
@@ -96,17 +74,7 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
       return;
     }
 
-    if (_pumps.isEmpty) {
-      showToast(
-        context,
-        message:
-            'No pumps assigned to this attendant. Contact your supervisor.',
-        status: 'error',
-      );
-      return;
-    }
-
-    if (_selectedPump == null) {
+    if (_pumps.isNotEmpty && _selectedPump == null) {
       showToast(context, message: 'Please select a pump', status: 'error');
       return;
     }
@@ -117,135 +85,65 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
       return;
     }
 
-    final customer = state.customer;
-    final discount =
-        customer != null && customer.hasInsurancePoints && _usePointsDiscount
-            ? customer.insurancePoints
-            : 0.0;
-
-    final pumpId = _selectedPump!.id;
-
-    if (state.sale != null) {
-      context.push(AppRoutes.paymentMethod);
+    final companyId =
+        AuthService.instance.getCompanyId() ?? state.customer?.companyId;
+    if (companyId == null || companyId.isEmpty) {
+      showToast(
+        context,
+        message:
+            'Company context is missing. Reload fuel prices and try again.',
+        status: 'error',
+      );
       return;
     }
+
+    final draft = PendingSaleDraft(
+      stockId: _selectedFuelPrice!.id,
+      companyId: companyId,
+      amount: amount,
+    );
 
     if (state.isNewCustomer) {
       final phone = _phoneController.text.trim();
       if (phone.isEmpty) {
-        showToast(context,
-            message: 'Please enter customer phone number', status: 'error');
+        showToast(
+          context,
+          message: 'Please enter customer phone number',
+          status: 'error',
+        );
         return;
       }
       final plate = _vehicleController.text.trim();
-
-      if (state.customer != null) {
-        if (state.otpPending && !state.otpVerified) {
-          _showOtpSheet();
-        } else {
-          bloc.add(
-            CreateSaleRequested(
-              context: context,
-              request: CreateSaleRequest(
-                fuelPriceId: _selectedFuelPrice!.id,
-                customerId: state.customer!.id,
-                pumpId: pumpId,
-                amount: amount,
-                usePointsDiscount: _usePointsDiscount,
-                discount: discount,
-              ),
-            ),
-          );
-        }
-        return;
-      }
-
-      bloc.add(
-        CreateCustomerRequested(
-          context: context,
-          phone: phone,
-          plateNumber: plate,
-          pendingSaleRequest: CreateSaleRequest(
-            fuelPriceId: _selectedFuelPrice!.id,
-            customerId: '',
-            pumpId: pumpId,
-            amount: amount,
-            usePointsDiscount: _usePointsDiscount,
-            discount: discount,
-          ),
-        ),
-      );
-    } else {
-      if (customer == null) {
-        showToast(context,
-            message: 'Please enter a valid vehicle number', status: 'error');
-        return;
-      }
-
-      if (!customer.isVerified) {
-        final pendingSaleRequest = CreateSaleRequest(
-          fuelPriceId: _selectedFuelPrice!.id,
-          customerId: customer.id,
-          pumpId: pumpId,
-          amount: amount,
-          usePointsDiscount: _usePointsDiscount,
-          discount: discount,
+      if (plate.isEmpty) {
+        showToast(
+          context,
+          message: 'Please enter a vehicle number',
+          status: 'error',
         );
-
-        if (state.otpPending && !state.otpVerified) {
-          bloc.add(
-            CreateCustomerRequested(
-              context: context,
-              phone: customer.phone,
-              plateNumber:
-                  customer.plateNumber ?? _vehicleController.text.trim(),
-              pendingSaleRequest: pendingSaleRequest,
-            ),
-          );
-          _showOtpSheet();
-        } else if (!state.otpVerified) {
-          bloc.add(
-            CreateCustomerRequested(
-              context: context,
-              phone: customer.phone,
-              plateNumber:
-                  customer.plateNumber ?? _vehicleController.text.trim(),
-              pendingSaleRequest: pendingSaleRequest,
-            ),
-          );
-        } else {
-          bloc.add(
-            CreateSaleRequested(
-              context: context,
-              request: pendingSaleRequest,
-            ),
-          );
-        }
         return;
       }
 
-      bloc.add(
-        CreateSaleRequested(
-          context: context,
-          request: CreateSaleRequest(
-            fuelPriceId: _selectedFuelPrice!.id,
-            customerId: customer.id,
-            pumpId: pumpId,
-            amount: amount,
-            usePointsDiscount: _usePointsDiscount,
-            discount: discount,
+      if (state.customer == null) {
+        bloc.add(
+          CreateCustomerRequested(
+            context: context,
+            phone: phone,
+            plateNumber: plate,
           ),
-        ),
+        );
+        return;
+      }
+    } else if (state.customer == null) {
+      showToast(
+        context,
+        message: 'Please enter a valid vehicle number',
+        status: 'error',
       );
+      return;
     }
-  }
 
-  void _showOtpSheet() {
-    final bloc = context.read<SaleBloc>();
-    final phone = bloc.state.customer?.phone ?? _phoneController.text.trim();
-    showAppSheet<void>(
-      child: OtpVerificationSheet(phone: phone),
-    );
+    bloc.add(PrepareSaleDraft(draft: draft));
+    context.push(AppRoutes.paymentMethod);
   }
 
   Future<void> _showFuelTypePicker() async {
@@ -269,49 +167,31 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<SaleBloc, SaleState>(
-          listenWhen: (prev, curr) => !prev.otpPending && curr.otpPending,
-          listener: (context, state) => _showOtpSheet(),
-        ),
-        BlocListener<SaleBloc, SaleState>(
-          listenWhen: (prev, curr) => prev.customer != curr.customer,
-          listener: (context, state) {
-            _syncDiscountFromCustomer(state.customer);
-            final plate = state.customer?.plateNumber;
-            if (plate != null && plate.isNotEmpty) {
-              _vehicleController.text = plate;
-            }
-          },
-        ),
-        BlocListener<SaleBloc, SaleState>(
-          listenWhen: (prev, curr) => prev.sale == null && curr.sale != null,
-          listener: (context, state) {
-            context.push(AppRoutes.paymentMethod);
-          },
-        ),
-      ],
+    return BlocListener<SaleBloc, SaleState>(
+      listenWhen: (prev, curr) =>
+          prev.customer == null && curr.customer != null && prev.isNewCustomer,
+      listener: (context, state) {
+        final amount = double.tryParse(_amountController.text.trim()) ?? 0;
+        final companyId =
+            AuthService.instance.getCompanyId() ?? state.customer?.companyId;
+        if (_selectedFuelPrice == null || companyId == null || amount <= 0) {
+          return;
+        }
+        context.read<SaleBloc>().add(
+          PrepareSaleDraft(
+            draft: PendingSaleDraft(
+              stockId: _selectedFuelPrice!.id,
+              companyId: companyId,
+              amount: amount,
+            ),
+          ),
+        );
+        context.push(AppRoutes.paymentMethod);
+      },
       child: BlocBuilder<SaleBloc, SaleState>(
         builder: (context, state) {
-          final colorScheme = context.colors;
-
           return Scaffold(
-            appBar: AppTopBar(
-              showBack: false,
-              actions: [
-                if (state.otpPending && !state.otpVerified)
-                  IconButton(
-                    onPressed: _showOtpSheet,
-                    icon: Icon(
-                      Icons.verified_user_outlined,
-                      color: colorScheme.primary,
-                      size: 22.sp,
-                    ),
-                    tooltip: 'Verify Customer',
-                  ),
-              ],
-            ),
+            appBar: const AppTopBar(showBack: false),
             body: SafeArea(
               child: StickyFooterLayout(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
@@ -349,16 +229,6 @@ class _PurchaseSaleScreenState extends State<PurchaseSaleScreen> {
                       ],
                       SizedBox(height: AppSpacing.md.h),
                       _AmountField(controller: _amountController),
-                      if (state.customer?.hasInsurancePoints ?? false) ...[
-                        SizedBox(height: AppSpacing.md.h),
-                        _DiscountSection(
-                          insurancePoints: state.customer!.insurancePoints,
-                          usePoints: _usePointsDiscount,
-                          onTogglePoints: (val) {
-                            setState(() => _usePointsDiscount = val);
-                          },
-                        ),
-                      ],
                     ],
                   ),
                 ),
@@ -595,10 +465,7 @@ class _PhoneField extends StatelessWidget {
             ),
           )
         else
-          Text(
-            _maskPhoneForDisplay(customer?.phone ?? ''),
-            style: valueStyle,
-          ),
+          Text(_maskPhoneForDisplay(customer?.phone ?? ''), style: valueStyle),
       ],
     );
 
@@ -607,10 +474,7 @@ class _PhoneField extends StatelessWidget {
 }
 
 class _FuelTypeField extends StatelessWidget {
-  const _FuelTypeField({
-    required this.selectedFuelPrice,
-    required this.onTap,
-  });
+  const _FuelTypeField({required this.selectedFuelPrice, required this.onTap});
 
   final FuelPrice? selectedFuelPrice;
   final VoidCallback onTap;
@@ -779,94 +643,6 @@ class _AmountField extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _DiscountSection extends StatelessWidget {
-  const _DiscountSection({
-    required this.insurancePoints,
-    required this.usePoints,
-    required this.onTogglePoints,
-  });
-
-  final double insurancePoints;
-  final bool usePoints;
-  final ValueChanged<bool> onTogglePoints;
-
-  String get _formattedPoints {
-    if (insurancePoints == insurancePoints.truncateToDouble()) {
-      return insurancePoints.toInt().toString();
-    }
-    return insurancePoints.toStringAsFixed(2);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colors;
-    final actionLabel = usePoints ? 'Applied' : 'Apply';
-
-    return _SaleFormCard(
-      child: Row(
-        children: [
-          Container(
-            width: 40.r,
-            height: 40.r,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Icon(
-              Icons.card_giftcard_outlined,
-              size: 22.sp,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          SizedBox(width: AppSpacing.ms.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Discount',
-                  style: context.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                Text(
-                  'GHC$_formattedPoints',
-                  style: context.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Semantics(
-            button: true,
-            label: usePoints ? 'Discount applied' : 'Apply discount',
-            child: GestureDetector(
-              onTap: () => onTogglePoints(!usePoints),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xs.w,
-                  vertical: AppSpacing.xs.h,
-                ),
-                child: Text(
-                  actionLabel,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

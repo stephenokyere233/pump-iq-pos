@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$AuthResponse {
   String? get accessToken;
   String? get refreshToken;
-  String? get expiresAt;
+  String? get stationId;
+  String? get pumpAttendantId;
   AuthUserPayload get user;
 
   /// Create a copy of AuthResponse
@@ -36,18 +37,20 @@ mixin _$AuthResponse {
                 other.accessToken == accessToken) &&
             (identical(other.refreshToken, refreshToken) ||
                 other.refreshToken == refreshToken) &&
-            (identical(other.expiresAt, expiresAt) ||
-                other.expiresAt == expiresAt) &&
+            (identical(other.stationId, stationId) ||
+                other.stationId == stationId) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
             (identical(other.user, user) || other.user == user));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, accessToken, refreshToken, expiresAt, user);
+  int get hashCode => Object.hash(
+      runtimeType, accessToken, refreshToken, stationId, pumpAttendantId, user);
 
   @override
   String toString() {
-    return 'AuthResponse(accessToken: $accessToken, refreshToken: $refreshToken, expiresAt: $expiresAt, user: $user)';
+    return 'AuthResponse(accessToken: $accessToken, refreshToken: $refreshToken, stationId: $stationId, pumpAttendantId: $pumpAttendantId, user: $user)';
   }
 }
 
@@ -60,7 +63,8 @@ abstract mixin class $AuthResponseCopyWith<$Res> {
   $Res call(
       {String? accessToken,
       String? refreshToken,
-      String? expiresAt,
+      String? stationId,
+      String? pumpAttendantId,
       AuthUserPayload user});
 
   $AuthUserPayloadCopyWith<$Res> get user;
@@ -80,7 +84,8 @@ class _$AuthResponseCopyWithImpl<$Res> implements $AuthResponseCopyWith<$Res> {
   $Res call({
     Object? accessToken = freezed,
     Object? refreshToken = freezed,
-    Object? expiresAt = freezed,
+    Object? stationId = freezed,
+    Object? pumpAttendantId = freezed,
     Object? user = null,
   }) {
     return _then(_self.copyWith(
@@ -92,9 +97,13 @@ class _$AuthResponseCopyWithImpl<$Res> implements $AuthResponseCopyWith<$Res> {
           ? _self.refreshToken
           : refreshToken // ignore: cast_nullable_to_non_nullable
               as String?,
-      expiresAt: freezed == expiresAt
-          ? _self.expiresAt
-          : expiresAt // ignore: cast_nullable_to_non_nullable
+      stationId: freezed == stationId
+          ? _self.stationId
+          : stationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      pumpAttendantId: freezed == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
               as String?,
       user: null == user
           ? _self.user
@@ -208,15 +217,15 @@ extension AuthResponsePatterns on AuthResponse {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(String? accessToken, String? refreshToken,
-            String? expiresAt, AuthUserPayload user)?
+            String? stationId, String? pumpAttendantId, AuthUserPayload user)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _AuthResponse() when $default != null:
-        return $default(
-            _that.accessToken, _that.refreshToken, _that.expiresAt, _that.user);
+        return $default(_that.accessToken, _that.refreshToken, _that.stationId,
+            _that.pumpAttendantId, _that.user);
       case _:
         return orElse();
     }
@@ -238,14 +247,14 @@ extension AuthResponsePatterns on AuthResponse {
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
     TResult Function(String? accessToken, String? refreshToken,
-            String? expiresAt, AuthUserPayload user)
+            String? stationId, String? pumpAttendantId, AuthUserPayload user)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _AuthResponse():
-        return $default(
-            _that.accessToken, _that.refreshToken, _that.expiresAt, _that.user);
+        return $default(_that.accessToken, _that.refreshToken, _that.stationId,
+            _that.pumpAttendantId, _that.user);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -266,14 +275,14 @@ extension AuthResponsePatterns on AuthResponse {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(String? accessToken, String? refreshToken,
-            String? expiresAt, AuthUserPayload user)?
+            String? stationId, String? pumpAttendantId, AuthUserPayload user)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _AuthResponse() when $default != null:
-        return $default(
-            _that.accessToken, _that.refreshToken, _that.expiresAt, _that.user);
+        return $default(_that.accessToken, _that.refreshToken, _that.stationId,
+            _that.pumpAttendantId, _that.user);
       case _:
         return null;
     }
@@ -286,7 +295,8 @@ class _AuthResponse implements AuthResponse {
   const _AuthResponse(
       {this.accessToken,
       this.refreshToken,
-      this.expiresAt,
+      this.stationId,
+      this.pumpAttendantId,
       required this.user});
 
   @override
@@ -294,7 +304,9 @@ class _AuthResponse implements AuthResponse {
   @override
   final String? refreshToken;
   @override
-  final String? expiresAt;
+  final String? stationId;
+  @override
+  final String? pumpAttendantId;
   @override
   final AuthUserPayload user;
 
@@ -315,18 +327,20 @@ class _AuthResponse implements AuthResponse {
                 other.accessToken == accessToken) &&
             (identical(other.refreshToken, refreshToken) ||
                 other.refreshToken == refreshToken) &&
-            (identical(other.expiresAt, expiresAt) ||
-                other.expiresAt == expiresAt) &&
+            (identical(other.stationId, stationId) ||
+                other.stationId == stationId) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
             (identical(other.user, user) || other.user == user));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, accessToken, refreshToken, expiresAt, user);
+  int get hashCode => Object.hash(
+      runtimeType, accessToken, refreshToken, stationId, pumpAttendantId, user);
 
   @override
   String toString() {
-    return 'AuthResponse(accessToken: $accessToken, refreshToken: $refreshToken, expiresAt: $expiresAt, user: $user)';
+    return 'AuthResponse(accessToken: $accessToken, refreshToken: $refreshToken, stationId: $stationId, pumpAttendantId: $pumpAttendantId, user: $user)';
   }
 }
 
@@ -341,7 +355,8 @@ abstract mixin class _$AuthResponseCopyWith<$Res>
   $Res call(
       {String? accessToken,
       String? refreshToken,
-      String? expiresAt,
+      String? stationId,
+      String? pumpAttendantId,
       AuthUserPayload user});
 
   @override
@@ -363,7 +378,8 @@ class __$AuthResponseCopyWithImpl<$Res>
   $Res call({
     Object? accessToken = freezed,
     Object? refreshToken = freezed,
-    Object? expiresAt = freezed,
+    Object? stationId = freezed,
+    Object? pumpAttendantId = freezed,
     Object? user = null,
   }) {
     return _then(_AuthResponse(
@@ -375,9 +391,13 @@ class __$AuthResponseCopyWithImpl<$Res>
           ? _self.refreshToken
           : refreshToken // ignore: cast_nullable_to_non_nullable
               as String?,
-      expiresAt: freezed == expiresAt
-          ? _self.expiresAt
-          : expiresAt // ignore: cast_nullable_to_non_nullable
+      stationId: freezed == stationId
+          ? _self.stationId
+          : stationId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      pumpAttendantId: freezed == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
               as String?,
       user: null == user
           ? _self.user

@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:pump_iq/src/features/auth/data/models/auth_response_model.dart';
 import 'package:pump_iq/src/features/auth/data/models/pump_info_model.dart';
+import 'package:pump_iq/src/features/auth/data/models/station_attendant_pin_login_model.dart';
 
+import '../config/api_paths.dart';
 import '../config/app_config.dart';
 import '../utils/utils.dart';
 import 'hive_service.dart';
@@ -19,8 +22,12 @@ class AuthService {
   static const _deviceIdKey = 'device_id';
   static const _stationIdKey = 'station_id';
   static const _stationNameKey = 'station_name';
+  static const _pumpAttendantIdKey = 'pump_attendant_id';
+  static const _companyIdKey = 'company_id';
   static const _pumpInfoKey = 'pump_info';
   static const _registeredStationIdKey = 'registered_station_id';
+  static const _sessionUserKey = 'session_user';
+  static const _lastLoginStationIdKey = 'last_login_station_id';
 
   Dio get _dio => AppConfig.dio;
   final SecureStorageService _storage = SecureStorageService.instance;
@@ -31,20 +38,18 @@ class AuthService {
   Stream<Map<String, dynamic>?> get authStateChanges =>
       _authStateController.stream;
 
-  FutureEither<Map<String, dynamic>?> login({
-    required String pin,
-    required String deviceId,
+  FutureEither<Map<String, dynamic>> loginWithPin({
+    required StationAttendantPinLoginRequest request,
   }) async {
     return runTask(() async {
-      final response = await _dio
-          .post<Map<String, dynamic>>('/auth/pump-attendant/login', data: {
-        'pin': pin,
-        'device_id': deviceId,
-      });
+      final response = await _dio.post<Map<String, dynamic>>(
+        ApiPaths.staffTokenPin,
+        data: request.toJson(),
+      );
       final data = response.data!;
 
-      final accessToken = data['accessToken'] as String?;
-      final refreshToken = data['refreshToken'] as String?;
+      final accessToken = data['access'] as String?;
+      final refreshToken = data['refresh'] as String?;
       if (accessToken != null) {
         await _storage.write(_accessTokenKey, accessToken);
         _dio.options.headers['Authorization'] = 'Bearer $accessToken';
@@ -53,7 +58,8 @@ class AuthService {
         await _storage.write(_refreshTokenKey, refreshToken);
       }
 
-      _persistStationFromAuthData(data);
+      _persistSessionFromAuthData(data);
+      await HiveService.instance.put(_lastLoginStationIdKey, request.stationId);
       _authStateController.add(data);
       return data;
     }, requiresNetwork: true);
@@ -61,23 +67,44 @@ class AuthService {
 
   FutureEither<void> logout() async {
     return runTask(() async {
-      final tokenResult = await _storage.read(_refreshTokenKey);
-      final refreshToken = tokenResult.getOrElse((_) => null);
-
-      await _dio.post<void>('/auth/logout', data: {
-        'refreshToken': refreshToken ?? '',
-      });
-
       await _clearLocalAuth();
-    }, requiresNetwork: true);
+    });
   }
 
   String? getStationId() {
     return HiveService.instance.get<String>(_stationIdKey);
   }
 
+  String? getLastLoginStationId() {
+    return HiveService.instance.get<String>(_lastLoginStationIdKey);
+  }
+
   String? getStationName() {
     return HiveService.instance.get<String>(_stationNameKey);
+  }
+
+  String? getPumpAttendantId() {
+    return HiveService.instance.get<String>(_pumpAttendantIdKey);
+  }
+
+  String? getCompanyId() {
+    final raw = HiveService.instance.get<String>(_companyIdKey);
+    final resolved = resolveApiReferenceId(raw);
+    if (resolved != null && raw != null && raw != resolved) {
+      HiveService.instance.put(_companyIdKey, resolved);
+    }
+    return resolved;
+  }
+
+  /// Server-assigned device UUID after registration (used for device-check).
+  String? getCachedDeviceId() {
+    return HiveService.instance.get<String>(_deviceIdKey);
+  }
+
+  void setCompanyId(String companyId) {
+    final resolved = resolveApiReferenceId(companyId);
+    if (resolved == null || resolved.isEmpty) return;
+    HiveService.instance.put(_companyIdKey, resolved);
   }
 
   List<PumpInfo> getPumpInfoList() {
@@ -97,20 +124,31 @@ class AuthService {
         return false;
       }
 
-      final response = await _dio.post<Map<String, dynamic>>(
-        '/auth/device-check',
-        data: {
-          'id': deviceId,
-          'station_id': stationId,
-        },
-      );
-      final data = response.data!;
+      Map<String, dynamic> data;
+      try {
+        final response = await _dio.post<Map<String, dynamic>>(
+          ApiPaths.authDeviceCheck,
+          data: {'id': deviceId, 'station_id': stationId},
+        );
+        data = response.data!;
+      } on DioException catch (e) {
+        // API returns 404 with DeviceCheckResponse when the device is unknown.
+        if (e.response?.statusCode == 404 &&
+            e.response?.data is Map<String, dynamic>) {
+          data = Map<String, dynamic>.from(e.response!.data as Map);
+        } else {
+          rethrow;
+        }
+      }
+
       final registered = data['registered'] as bool? ?? false;
 
       await _setDeviceRegistrationCache(
         registered: registered,
         stationId: stationId,
-        serverDeviceId: (data['device_id'] ?? data['deviceId'])?.toString(),
+        serverDeviceId:
+            (data['device'] as Map?)?['id']?.toString() ??
+            (data['device_id'] ?? data['deviceId'])?.toString(),
       );
 
       return registered;
@@ -126,19 +164,21 @@ class AuthService {
         throw Exception('Station not assigned to this user');
       }
 
+      final requestBody = Map<String, dynamic>.from(payload)
+        ..remove('id')
+        ..['station_id'] = stationId;
+
       final response = await _dio.post<Map<String, dynamic>>(
-        '/auth/register-device',
-        data: {
-          ...payload,
-          'station_id': stationId,
-        },
+        ApiPaths.authRegisterDevice,
+        data: requestBody,
       );
       final data = response.data!;
 
       await _setDeviceRegistrationCache(
         registered: true,
         stationId: stationId,
-        serverDeviceId: (data['device_id'] ?? data['deviceId'])?.toString(),
+        serverDeviceId: (data['id'] ?? data['device_id'] ?? data['deviceId'])
+            ?.toString(),
       );
 
       return data;
@@ -147,12 +187,9 @@ class AuthService {
 
   FutureEither<Map<String, dynamic>?> getCurrentUser() async {
     return runTask(() async {
-      final response = await _dio.get<Map<String, dynamic>>('/auth/me');
-      final data = response.data;
-      if (data != null) {
-        _persistStationFromAuthData(data);
-      }
-      return data;
+      final raw = HiveService.instance.get<String>(_sessionUserKey);
+      if (raw == null || raw.isEmpty) return null;
+      return Map<String, dynamic>.from(jsonDecode(raw) as Map);
     });
   }
 
@@ -173,9 +210,12 @@ class AuthService {
     }
   }
 
-  void _persistStationFromAuthData(Map<String, dynamic> data) {
-    final user = AuthResponse.fromPayload(data).user;
-    final stationId = user.resolvedStationId;
+  void _persistSessionFromAuthData(Map<String, dynamic> data) {
+    final auth = AuthResponse.fromPinLogin(data);
+    final user = auth.user;
+    final roles = parseAuthRoleMaps(data);
+
+    final stationId = auth.stationId ?? user.resolvedStationId;
     if (stationId != null) {
       HiveService.instance.put(_stationIdKey, stationId);
     }
@@ -183,6 +223,15 @@ class AuthService {
     final stationName = user.resolvedStationName;
     if (stationName != null) {
       HiveService.instance.put(_stationNameKey, stationName);
+    }
+
+    if (auth.pumpAttendantId != null) {
+      HiveService.instance.put(_pumpAttendantIdKey, auth.pumpAttendantId!);
+    }
+
+    final companyId = resolveCompanyIdFromRoles(roles);
+    if (companyId != null) {
+      setCompanyId(companyId);
     }
 
     if (user.pumpInfo.isNotEmpty) {
@@ -193,10 +242,10 @@ class AuthService {
     } else {
       HiveService.instance.delete(_pumpInfoKey);
     }
+
+    HiveService.instance.put(_sessionUserKey, jsonEncode(data));
   }
 
-  /// Clears all local auth state without calling the logout endpoint.
-  /// Used by the token-refresh interceptor when a session is irrecoverable.
   Future<void> clearLocalSession() async {
     await _clearLocalAuth();
   }
@@ -208,20 +257,22 @@ class AuthService {
     await HiveService.instance.delete(_stationIdKey);
     await HiveService.instance.delete(_stationNameKey);
     await HiveService.instance.delete(_pumpInfoKey);
+    await HiveService.instance.delete(_pumpAttendantIdKey);
+    await HiveService.instance.delete(_companyIdKey);
+    await HiveService.instance.delete(_sessionUserKey);
+    await HiveService.instance.delete(_deviceRegisteredKey);
+    await HiveService.instance.delete(_registeredStationIdKey);
+    await HiveService.instance.delete(_deviceIdKey);
     _authStateController.add(null);
   }
 
-  /// Restores the auth header from stored token on app start.
   Future<void> restoreAuthHeader() async {
     final result = await _storage.read(_accessTokenKey);
-    result.fold(
-      (_) {},
-      (token) {
-        if (token != null) {
-          _dio.options.headers['Authorization'] = 'Bearer $token';
-        }
-      },
-    );
+    result.fold((_) {}, (token) {
+      if (token != null) {
+        _dio.options.headers['Authorization'] = 'Bearer $token';
+      }
+    });
   }
 
   void dispose() {

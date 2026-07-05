@@ -22,6 +22,8 @@ mixin _$AppUser {
   String? get stationId;
   String? get stationName;
   String? get role;
+  String? get pumpAttendantId;
+  String? get companyId;
 
   /// Create a copy of AppUser
   /// with the given fields replaced by the non-null parameter values.
@@ -45,16 +47,20 @@ mixin _$AppUser {
                 other.stationId == stationId) &&
             (identical(other.stationName, stationName) ||
                 other.stationName == stationName) &&
-            (identical(other.role, role) || other.role == role));
+            (identical(other.role, role) || other.role == role) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, email, name, phone, photoUrl,
-      stationId, stationName, role);
+      stationId, stationName, role, pumpAttendantId, companyId);
 
   @override
   String toString() {
-    return 'AppUser(id: $id, email: $email, name: $name, phone: $phone, photoUrl: $photoUrl, stationId: $stationId, stationName: $stationName, role: $role)';
+    return 'AppUser(id: $id, email: $email, name: $name, phone: $phone, photoUrl: $photoUrl, stationId: $stationId, stationName: $stationName, role: $role, pumpAttendantId: $pumpAttendantId, companyId: $companyId)';
   }
 }
 
@@ -71,7 +77,9 @@ abstract mixin class $AppUserCopyWith<$Res> {
       String? photoUrl,
       String? stationId,
       String? stationName,
-      String? role});
+      String? role,
+      String? pumpAttendantId,
+      String? companyId});
 }
 
 /// @nodoc
@@ -94,6 +102,8 @@ class _$AppUserCopyWithImpl<$Res> implements $AppUserCopyWith<$Res> {
     Object? stationId = freezed,
     Object? stationName = freezed,
     Object? role = freezed,
+    Object? pumpAttendantId = freezed,
+    Object? companyId = freezed,
   }) {
     return _then(_self.copyWith(
       id: null == id
@@ -127,6 +137,14 @@ class _$AppUserCopyWithImpl<$Res> implements $AppUserCopyWith<$Res> {
       role: freezed == role
           ? _self.role
           : role // ignore: cast_nullable_to_non_nullable
+              as String?,
+      pumpAttendantId: freezed == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      companyId: freezed == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -233,15 +251,26 @@ extension AppUserPatterns on AppUser {
             String? photoUrl,
             String? stationId,
             String? stationName,
-            String? role)?
+            String? role,
+            String? pumpAttendantId,
+            String? companyId)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _AppUser() when $default != null:
-        return $default(_that.id, _that.email, _that.name, _that.phone,
-            _that.photoUrl, _that.stationId, _that.stationName, _that.role);
+        return $default(
+            _that.id,
+            _that.email,
+            _that.name,
+            _that.phone,
+            _that.photoUrl,
+            _that.stationId,
+            _that.stationName,
+            _that.role,
+            _that.pumpAttendantId,
+            _that.companyId);
       case _:
         return orElse();
     }
@@ -270,14 +299,25 @@ extension AppUserPatterns on AppUser {
             String? photoUrl,
             String? stationId,
             String? stationName,
-            String? role)
+            String? role,
+            String? pumpAttendantId,
+            String? companyId)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _AppUser():
-        return $default(_that.id, _that.email, _that.name, _that.phone,
-            _that.photoUrl, _that.stationId, _that.stationName, _that.role);
+        return $default(
+            _that.id,
+            _that.email,
+            _that.name,
+            _that.phone,
+            _that.photoUrl,
+            _that.stationId,
+            _that.stationName,
+            _that.role,
+            _that.pumpAttendantId,
+            _that.companyId);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -305,14 +345,25 @@ extension AppUserPatterns on AppUser {
             String? photoUrl,
             String? stationId,
             String? stationName,
-            String? role)?
+            String? role,
+            String? pumpAttendantId,
+            String? companyId)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _AppUser() when $default != null:
-        return $default(_that.id, _that.email, _that.name, _that.phone,
-            _that.photoUrl, _that.stationId, _that.stationName, _that.role);
+        return $default(
+            _that.id,
+            _that.email,
+            _that.name,
+            _that.phone,
+            _that.photoUrl,
+            _that.stationId,
+            _that.stationName,
+            _that.role,
+            _that.pumpAttendantId,
+            _that.companyId);
       case _:
         return null;
     }
@@ -330,7 +381,9 @@ class _AppUser extends AppUser {
       this.photoUrl,
       this.stationId,
       this.stationName,
-      this.role})
+      this.role,
+      this.pumpAttendantId,
+      this.companyId})
       : super._();
 
   @override
@@ -349,6 +402,10 @@ class _AppUser extends AppUser {
   final String? stationName;
   @override
   final String? role;
+  @override
+  final String? pumpAttendantId;
+  @override
+  final String? companyId;
 
   /// Create a copy of AppUser
   /// with the given fields replaced by the non-null parameter values.
@@ -373,16 +430,20 @@ class _AppUser extends AppUser {
                 other.stationId == stationId) &&
             (identical(other.stationName, stationName) ||
                 other.stationName == stationName) &&
-            (identical(other.role, role) || other.role == role));
+            (identical(other.role, role) || other.role == role) &&
+            (identical(other.pumpAttendantId, pumpAttendantId) ||
+                other.pumpAttendantId == pumpAttendantId) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, id, email, name, phone, photoUrl,
-      stationId, stationName, role);
+      stationId, stationName, role, pumpAttendantId, companyId);
 
   @override
   String toString() {
-    return 'AppUser(id: $id, email: $email, name: $name, phone: $phone, photoUrl: $photoUrl, stationId: $stationId, stationName: $stationName, role: $role)';
+    return 'AppUser(id: $id, email: $email, name: $name, phone: $phone, photoUrl: $photoUrl, stationId: $stationId, stationName: $stationName, role: $role, pumpAttendantId: $pumpAttendantId, companyId: $companyId)';
   }
 }
 
@@ -400,7 +461,9 @@ abstract mixin class _$AppUserCopyWith<$Res> implements $AppUserCopyWith<$Res> {
       String? photoUrl,
       String? stationId,
       String? stationName,
-      String? role});
+      String? role,
+      String? pumpAttendantId,
+      String? companyId});
 }
 
 /// @nodoc
@@ -423,6 +486,8 @@ class __$AppUserCopyWithImpl<$Res> implements _$AppUserCopyWith<$Res> {
     Object? stationId = freezed,
     Object? stationName = freezed,
     Object? role = freezed,
+    Object? pumpAttendantId = freezed,
+    Object? companyId = freezed,
   }) {
     return _then(_AppUser(
       id: null == id
@@ -456,6 +521,14 @@ class __$AppUserCopyWithImpl<$Res> implements _$AppUserCopyWith<$Res> {
       role: freezed == role
           ? _self.role
           : role // ignore: cast_nullable_to_non_nullable
+              as String?,
+      pumpAttendantId: freezed == pumpAttendantId
+          ? _self.pumpAttendantId
+          : pumpAttendantId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      companyId: freezed == companyId
+          ? _self.companyId
+          : companyId // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
